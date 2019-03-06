@@ -261,12 +261,12 @@ public class ZUpdate {
                     boolean hasInstallPermission = isHasInstallPermissionWithO(activity);
                     if (!hasInstallPermission) {
                         if (listener != null) {
-                            listener.onDownloadStatus(EnumDownloadStatus.SUCESS_NO_PREMISSION);
+                            listener.onDownloadStatus(EnumDownloadStatus.SUCCESS_NO_PREMISSION);
                         }
                         return;
                     } else {
                         if (listener != null) {
-                            listener.onDownloadStatus(EnumDownloadStatus.SUCESS);
+                            listener.onDownloadStatus(EnumDownloadStatus.SUCCESS);
                         }
                     }
                 }
@@ -323,9 +323,12 @@ public class ZUpdate {
      */
 
     public enum EnumDownloadStatus {
-        FAIL,//下载失败
-        SUCESS,//下载成功，正常安装
-        SUCESS_NO_PREMISSION;//下载成功，无权限安装 主要针对8.0以上
+        /*下载失败*/
+        FAIL,
+        /*下载成功，正常安装*/
+        SUCCESS,
+        /*下载成功，无权限安装 主要针对8.0以上*/
+        SUCCESS_NO_PREMISSION;
     }
 
     public interface OnNewVersionListener {
