@@ -250,7 +250,7 @@ public class ZUpdate {
             @Override
             public void onError(int code, Call call, Exception e) {
                 if (listener != null) {
-                    listener.onDownloadStatus(EnumDownloadStatus.FAIL);
+                    listener.onDownloadStatus(EnumDownloadStatus.FAIL, null);
                 }
                 ToastUtil.toastShort("下载失败！");
             }
@@ -261,12 +261,12 @@ public class ZUpdate {
                     boolean hasInstallPermission = isHasInstallPermissionWithO(activity);
                     if (!hasInstallPermission) {
                         if (listener != null) {
-                            listener.onDownloadStatus(EnumDownloadStatus.SUCCESS_NO_PREMISSION);
+                            listener.onDownloadStatus(EnumDownloadStatus.SUCCESS_NO_PREMISSION, resObj);
                         }
                         return;
                     } else {
                         if (listener != null) {
-                            listener.onDownloadStatus(EnumDownloadStatus.SUCCESS);
+                            listener.onDownloadStatus(EnumDownloadStatus.SUCCESS, resObj);
                         }
                     }
                 }
@@ -351,6 +351,6 @@ public class ZUpdate {
          *
          * @return 下载状态 1-下载失败 2-下载成功 3-下载成功但无安装权限（8.0以上）
          */
-        boolean onDownloadStatus(EnumDownloadStatus downloadStatus);
+        boolean onDownloadStatus(EnumDownloadStatus downloadStatus, File appFile);
     }
 }
