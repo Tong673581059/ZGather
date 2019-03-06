@@ -2,7 +2,9 @@ package com.zcolin.zupdate;
 
 import android.app.Activity;
 import android.app.DownloadManager;
+import android.content.Context;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 
 import com.google.gson.JsonSyntaxException;
@@ -216,7 +218,7 @@ public class ZUpdate {
                             if (isUseSystemDownloader) {
                                 downLoadAppUseSystemDownloader(acty, updateReply.downLoadUrl());
                             } else {
-                                downLoadApp(acty, updateReply.downLoadUrl());
+                                downLoadApp(acty, updateReply.downLoadUrl(), listener);
                             }
                         }
                         return true;
@@ -231,7 +233,7 @@ public class ZUpdate {
                 if (isUseSystemDownloader) {
                     downLoadAppUseSystemDownloader(acty, updateReply.downLoadUrl());
                 } else {
-                    downLoadApp(acty, updateReply.downLoadUrl());
+                    downLoadApp(acty, updateReply.downLoadUrl(), listener);
                 }
                 return true;
             }).show();
@@ -241,17 +243,33 @@ public class ZUpdate {
     /**
      * 下载App
      */
-    public void downLoadApp(final Activity activity, String downLoadUrl) {
+    public void downLoadApp(final Activity activity, String downLoadUrl, OnNewVersionListener listener) {
         String fileName = getFileNameByUrl(downLoadUrl);
         fileName = fileName == null ? UUID.randomUUID().toString() + ".apk" : fileName;
         ZHttp.downLoadFile(downLoadUrl, new ZFileResponse(FramePathConst.getInstance().getPathTemp() + fileName, isDownloadSilent ? null : activity, "正在下载……") {
             @Override
             public void onError(int code, Call call, Exception e) {
+                if (listener != null) {
+                    listener.onDownloadStatus(EnumDownloadStatus.FAIL);
+                }
                 ToastUtil.toastShort("下载失败！");
             }
 
             @Override
             public void onSuccess(Response response, File resObj) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    boolean hasInstallPermission = isHasInstallPermissionWithO(activity);
+                    if (!hasInstallPermission) {
+                        if (listener != null) {
+                            listener.onDownloadStatus(EnumDownloadStatus.SUCESS_NO_PREMISSION);
+                        }
+                        return;
+                    } else {
+                        if (listener != null) {
+                            listener.onDownloadStatus(EnumDownloadStatus.SUCESS);
+                        }
+                    }
+                }
                 AppUtil.installBySys(BaseApp.APP_CONTEXT, resObj);
             }
 
@@ -261,6 +279,14 @@ public class ZUpdate {
                 setBarMsg("正在下载……" + (int) (progress * 100) + "/" + 100);
             }
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private boolean isHasInstallPermissionWithO(Context context){
+        if (context == null){
+            return false;
+        }
+        return context.getPackageManager().canRequestPackageInstalls();
     }
 
     /**
@@ -292,6 +318,16 @@ public class ZUpdate {
         return fileName;
     }
 
+    /**
+     * 下载状态
+     */
+
+    public enum EnumDownloadStatus {
+        FAIL,//下载失败
+        SUCESS,//下载成功，正常安装
+        SUCESS_NO_PREMISSION;//下载成功，无权限安装 主要针对8.0以上
+    }
+
     public interface OnNewVersionListener {
         /**
          * 有新版本回调
@@ -306,5 +342,12 @@ public class ZUpdate {
          * @return 是否拦截确认升级的默认操作，返回true则自己处理
          */
         boolean onUpdateConfirm(ZUpdateReply downLoadUrl);
+
+        /**
+         * 下载失败监听
+         *
+         * @return 下载状态 1-下载失败 2-下载成功 3-下载成功但无安装权限（8.0以上）
+         */
+        boolean onDownloadStatus(EnumDownloadStatus downloadStatus);
     }
 }
