@@ -2,6 +2,7 @@ package com.zcolin.zupdate;
 
 import android.app.Activity;
 import android.app.DownloadManager;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.text.TextUtils;
 
@@ -236,9 +237,10 @@ public class ZUpdate {
                     })
                     .show();
         } else if (!isSilent && !(isOnlyWifi && NetworkUtil.isMobileConnect(acty))) {
-            ZConfirm.instance(acty).setTitle("版本更新  " + updateReply.versionName())
+            ZConfirm zConfirm = ZConfirm.instance(acty).setTitle("版本更新  " + updateReply.versionName())
                     .setMessage(updateReply.updateMessage())
                     .setCancelBtnText("暂不升级")
+                    .setIsCancelAble(false)
                     .addCancelListener(() -> {
                         if (listener != null) {
                             listener.onUpdateCancel();
@@ -253,7 +255,13 @@ public class ZUpdate {
                             downLoadApp(acty, updateReply.downLoadUrl(), listener);
                         }
                         return true;
-                    }).show();
+                    });
+            zConfirm.setOnDismissListener(dialog -> {
+                if (listener != null) {
+                    listener.onUpdateCancel();
+                }
+            });
+            zConfirm.show();
         }
     }
 
