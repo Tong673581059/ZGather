@@ -2,13 +2,12 @@ package com.zcolin.zupdate;
 
 import android.app.Activity;
 import android.app.DownloadManager;
-import android.content.Context;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 
 import com.google.gson.JsonSyntaxException;
 import com.zcolin.frame.app.BaseApp;
+import com.zcolin.frame.app.BaseFrameActivity;
 import com.zcolin.frame.app.FramePathConst;
 import com.zcolin.frame.http.ZHttp;
 import com.zcolin.frame.http.response.ZFileResponse;
@@ -113,18 +112,19 @@ public class ZUpdate {
     /**
      * 检查版本更新, 使用默认新版本监听器
      */
-    public void checkVersion(final Activity acty) {
+    public void checkVersion(final BaseFrameActivity acty) {
         checkVersion(acty, null);
     }
 
     /**
      * 检查版本更新, 如果有新版本，自己定义之后的操作
      */
-    public void checkVersion(final Activity acty, OnNewVersionListener listener) {
+    public void checkVersion(final BaseFrameActivity acty, OnNewVersionListener listener) {
         if (!NetworkUtil.isNetworkAvailable(BaseApp.APP_CONTEXT)) {
             if (!isSilent) {
                 ToastUtil.toastShort("网络连接不可用，请开启网络！");
             }
+            listener.onUpdateError(DownloadErrorStatus.ERROR_NO_NETWORK);
             return;
         }
 
@@ -140,6 +140,7 @@ public class ZUpdate {
 
                 if (reply != null) {
                     if (!isSilent && !reply.isUpdate()) {
+                        listener.onNewVersion(reply);
                         ToastUtil.toastShort("当前是最新版本");
                     } else if (reply.isUpdate()) {
                         if (listener == null || !listener.onNewVersion(reply)) {
@@ -148,6 +149,9 @@ public class ZUpdate {
                     }
                 } else if (!isSilent) {
                     ToastUtil.toastShort("数据转换错误");
+                    if (listener != null) {
+                        listener.onUpdateError(DownloadErrorStatus.ERROR_DATE_CONVERT);
+                    }
                 }
             }
 
@@ -155,6 +159,9 @@ public class ZUpdate {
             public void onError(int code, Call call, Exception e) {
                 if (!isSilent) {
                     ToastUtil.toastShort(getError(e, code));
+                }
+                if (listener != null) {
+                    listener.onUpdateError(DownloadErrorStatus.ERROR_OTHER);
                 }
             }
         };
@@ -200,7 +207,7 @@ public class ZUpdate {
      *
      * @param updateReply 更新信息，服务器回传回来的
      */
-    public void showNewUpdateDialog(final Activity acty, final ZUpdateReply updateReply, OnNewVersionListener listener) {
+    public void showNewUpdateDialog(final BaseFrameActivity acty, final ZUpdateReply updateReply, OnNewVersionListener listener) {
         //界面已经销毁，则不再执行后续操作
         if (acty == null || acty.isFinishing() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && acty.isDestroyed())) {
             return;
@@ -208,7 +215,7 @@ public class ZUpdate {
 
         if (updateReply.isForce()) {
             ZConfirm.instance(acty)
-                    .setTitle("版本更新  " + updateReply.versionName() + "版")
+                    .setTitle("版本更新  " + updateReply.versionName())
                     .setMessage("必须完成本次更新才能继续使用本系统\n\n" + updateReply.updateMessage())
                     .setCancelBtnText("退出系统")
                     .setOKBtnText("立即升级")
@@ -229,48 +236,45 @@ public class ZUpdate {
                     })
                     .show();
         } else if (!isSilent && !(isOnlyWifi && NetworkUtil.isMobileConnect(acty))) {
-            ZConfirm.instance(acty).setTitle("版本更新  " + updateReply.versionName() + "版").setMessage(updateReply.updateMessage()).setCancelBtnText("暂不升级").setOKBtnText("立即升级").addSubmitListener(() -> {
-                if (isUseSystemDownloader) {
-                    downLoadAppUseSystemDownloader(acty, updateReply.downLoadUrl());
-                } else {
-                    downLoadApp(acty, updateReply.downLoadUrl(), listener);
-                }
-                return true;
-            }).show();
+            ZConfirm.instance(acty).setTitle("版本更新  " + updateReply.versionName())
+                    .setMessage(updateReply.updateMessage())
+                    .setCancelBtnText("暂不升级")
+                    .addCancelListener(() -> {
+                        if (listener != null) {
+                            listener.onUpdateCancel();
+                        }
+                        return true;
+                    })
+                    .setOKBtnText("立即升级")
+                    .addSubmitListener(() -> {
+                        if (isUseSystemDownloader) {
+                            downLoadAppUseSystemDownloader(acty, updateReply.downLoadUrl());
+                        } else {
+                            downLoadApp(acty, updateReply.downLoadUrl(), listener);
+                        }
+                        return true;
+                    }).show();
         }
     }
 
     /**
      * 下载App
      */
-    public void downLoadApp(final Activity activity, String downLoadUrl, OnNewVersionListener listener) {
+    public void downLoadApp(final BaseFrameActivity activity, String downLoadUrl, OnNewVersionListener listener) {
         String fileName = getFileNameByUrl(downLoadUrl);
         fileName = fileName == null ? UUID.randomUUID().toString() + ".apk" : fileName;
         ZHttp.downLoadFile(downLoadUrl, new ZFileResponse(FramePathConst.getInstance().getPathTemp() + fileName, isDownloadSilent ? null : activity, "正在下载……") {
             @Override
             public void onError(int code, Call call, Exception e) {
-                if (listener != null) {
-                    listener.onDownloadStatus(EnumDownloadStatus.FAIL, null);
-                }
                 ToastUtil.toastShort("下载失败！");
+                if (listener != null) {
+                    listener.onUpdateError(DownloadErrorStatus.ERROR_DOWNLOAD);
+                }
             }
 
             @Override
             public void onSuccess(Response response, File resObj) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    boolean hasInstallPermission = isHasInstallPermissionWithO(activity);
-                    if (!hasInstallPermission) {
-                        if (listener != null) {
-                            listener.onDownloadStatus(EnumDownloadStatus.SUCCESS_NO_PREMISSION, resObj);
-                        }
-                        return;
-                    } else {
-                        if (listener != null) {
-                            listener.onDownloadStatus(EnumDownloadStatus.SUCCESS, resObj);
-                        }
-                    }
-                }
-                AppUtil.installBySys(BaseApp.APP_CONTEXT, resObj);
+                AppUtil.installBySys(activity, resObj);
             }
 
             @Override
@@ -279,14 +283,6 @@ public class ZUpdate {
                 setBarMsg("正在下载……" + (int) (progress * 100) + "/" + 100);
             }
         });
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private boolean isHasInstallPermissionWithO(Context context){
-        if (context == null){
-            return false;
-        }
-        return context.getPackageManager().canRequestPackageInstalls();
     }
 
     /**
@@ -319,16 +315,17 @@ public class ZUpdate {
     }
 
     /**
-     * 下载状态
+     * 下载错误分类
      */
-
-    public enum EnumDownloadStatus {
+    public enum DownloadErrorStatus {
         /*下载失败*/
-        FAIL,
-        /*下载成功，正常安装*/
-        SUCCESS,
-        /*下载成功，无权限安装 主要针对8.0以上*/
-        SUCCESS_NO_PREMISSION;
+        ERROR_DOWNLOAD,
+        /*其他*/
+        ERROR_OTHER,
+        /*无网络*/
+        ERROR_NO_NETWORK,
+        /*数据转换错误*/
+        ERROR_DATE_CONVERT;
     }
 
     public interface OnNewVersionListener {
@@ -347,10 +344,13 @@ public class ZUpdate {
         boolean onUpdateConfirm(ZUpdateReply downLoadUrl);
 
         /**
-         * 下载失败监听
-         *
-         * @return 下载状态 1-下载失败 2-下载成功 3-下载成功但无安装权限（8.0以上）
+         * 用户暂不升级回调
          */
-        boolean onDownloadStatus(EnumDownloadStatus downloadStatus, File appFile);
+        void onUpdateCancel();
+
+        /**
+         * 用户自动更新出错监听，例如无网络、数据格式转换错误、下载错误、其他等
+         */
+        void onUpdateError(DownloadErrorStatus errorStatus);
     }
 }
