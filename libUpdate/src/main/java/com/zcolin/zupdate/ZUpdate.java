@@ -240,7 +240,6 @@ public class ZUpdate {
             ZConfirm zConfirm = ZConfirm.instance(acty).setTitle("版本更新  " + updateReply.versionName())
                     .setMessage(updateReply.updateMessage())
                     .setCancelBtnText("暂不升级")
-                    .setIsCancelAble(false)
                     .addCancelListener(() -> {
                         if (listener != null) {
                             listener.onUpdateCancel();
