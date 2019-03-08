@@ -239,6 +239,7 @@ public class ZUpdate {
         } else if (!isSilent && !(isOnlyWifi && NetworkUtil.isMobileConnect(acty))) {
             ZConfirm zConfirm = ZConfirm.instance(acty).setTitle("版本更新  " + updateReply.versionName())
                     .setMessage(updateReply.updateMessage())
+                    .setIsCancelAble(false)
                     .setCancelBtnText("暂不升级")
                     .addCancelListener(() -> {
                         if (listener != null) {
@@ -255,11 +256,6 @@ public class ZUpdate {
                         }
                         return true;
                     });
-            zConfirm.setOnDismissListener(dialog -> {
-                if (listener != null) {
-                    listener.onUpdateCancel();
-                }
-            });
             zConfirm.show();
         }
     }
@@ -351,7 +347,8 @@ public class ZUpdate {
         boolean onUpdateConfirm(ZUpdateReply downLoadUrl);
 
         /**
-         * 用户暂不升级回调
+         * 用户不升级回调
+         *
          */
         void onUpdateCancel();
 
