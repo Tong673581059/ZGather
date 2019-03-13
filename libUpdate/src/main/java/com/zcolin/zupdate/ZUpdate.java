@@ -141,8 +141,9 @@ public class ZUpdate {
 
                 if (reply != null) {
                     if (!isSilent && !reply.isUpdate()) {
-                        listener.onNewVersion(reply);
-                        ToastUtil.toastShort("当前是最新版本");
+                        if (!listener.onNoNeedUpdate(reply)) {
+                            ToastUtil.toastShort("当前是最新版本");
+                        }
                     } else if (reply.isUpdate()) {
                         if (listener == null || !listener.onNewVersion(reply)) {
                             showNewUpdateDialog(acty, reply, listener);
@@ -332,6 +333,12 @@ public class ZUpdate {
     }
 
     public interface OnNewVersionListener {
+        /**
+         * 不需要更新回调
+         *
+         * @return 是否显示"当前是最新版本"字样，默认是true显示， false不显示
+         */
+        boolean onNoNeedUpdate(ZUpdateReply reply);
         /**
          * 有新版本回调
          *
