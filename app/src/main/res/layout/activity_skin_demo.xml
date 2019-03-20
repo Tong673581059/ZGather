@@ -21,7 +21,7 @@
         android:id="@+id/btn_change_skin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        style="@style/TextStyle_TCPrimary_Big"
         android:text="换肤"
         android:layout_margin="@dimen/gui_dimens_mid"
         skin:skinEnable="true"/>

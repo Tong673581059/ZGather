@@ -3,6 +3,7 @@ package com.telchina.libskin.load;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 
 import com.telchina.libskin.config.SkinConfig;
@@ -187,6 +188,22 @@ public class SkinManager implements ISkinLoader {
         }
 
         return trueDrawable;
+    }
+    public int getStyle(String resName){
+        int orignStyle=mResources.getIdentifier(resName, "style", context.getPackageName());
+        if (mResources == null || isDefaultSkin) {
+            return orignStyle;
+        }
+        String skinName=SkinConfig.getCustomSkinPath(context);
+        int trueResId = mResources.getIdentifier(resName+"_"+skinName, "style", context.getPackageName());
+        int tureStyle=0;
+        try{
+            tureStyle=trueResId;
+        }catch (Resources.NotFoundException e){
+            e.printStackTrace();
+            tureStyle=orignStyle;
+        }
+        return tureStyle;
     }
 
     /**
