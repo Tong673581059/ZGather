@@ -18,6 +18,11 @@ public class AttrFactory {
     public static final String BACKGROUND_TINTLIST  = "backgroundTint";
     public static final String NAVIGATION_VIEW_MENU = "navigationViewMenu";
 
+    public static final String DRAWABLE_LEFT   = "drawableLeft";
+    public static final String DRAWABLE_RIGHT  = "drawableRight";
+    public static final String DRAWABLE_TOP    = "drawableTop";
+    public static final String DRAWABLE_BOTTOM = "drawableBottom";
+
 
     public static SkinAttr get(String attrName, int attrValueRefId, String attrValueRefName, String typeName) {
         Log.i(TAG, "attrName:" + attrName);
@@ -41,6 +46,8 @@ public class AttrFactory {
         } else if (NAVIGATION_VIEW_MENU.equals(attrName)) {
             mSkinAttr = new NavigationViewAttr();
             Log.i(TAG, "create:FabButtonAttr");
+        } else if (DRAWABLE_LEFT.equals(attrName)) {
+            mSkinAttr = new DrawableAttr();
         } else {
             return null;
         }
@@ -55,7 +62,6 @@ public class AttrFactory {
     /**
      * 检测属性是否被支持
      *
-     * @param attrName
      * @return true : supported <br>
      * false: not supported
      */

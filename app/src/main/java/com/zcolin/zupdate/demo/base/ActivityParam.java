@@ -24,6 +24,7 @@ public @interface ActivityParam {
     boolean ISIMMERSEPADDINGTOP_DEF_VALUE = false;
     boolean ISSHOWTOOLBAR_DEF_VALUE       = true;
     boolean ISSHOWRETURN_DEF_VALUE        = true;
+    boolean ISSKIN_DEF_VALUE              = false;
 
     /**
      * 是否使用沉浸式状态栏
@@ -49,4 +50,9 @@ public @interface ActivityParam {
      * 是否显示返回按钮，带返回操作
      */
     boolean isShowReturn() default ISSHOWRETURN_DEF_VALUE;
+
+    /**
+     * 是否需要换肤功能
+     */
+    boolean isSkin() default ISSKIN_DEF_VALUE;
 }

@@ -26,4 +26,13 @@
         android:layout_margin="@dimen/gui_dimens_mid"
         skin:skinEnable="true"/>
 
+    <Button
+        android:id="@+id/btn_default"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:text="默认"
+        android:layout_margin="@dimen/gui_dimens_mid"
+        skin:skinEnable="true"/>
+
 </LinearLayout>

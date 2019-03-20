@@ -1,23 +1,19 @@
 package com.zcolin.zupdate.demo;
 
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 
-
-import com.telchina.libskin.base.BaseSkinActivity;
 import com.telchina.libskin.load.SkinManager;
-import com.zcolin.frame.app.BaseFrameActivity;
 import com.zcolin.zupdate.demo.base.ActivityParam;
-import com.zcolin.zupdate.demo.base.BaseActivity;
+import com.zcolin.zupdate.demo.base.BaseSkinActivity;
 
-@ActivityParam(isShowToolBar = true, isImmerse = false)
-public class SkinDemoActivity extends BaseActivity implements View.OnClickListener {
+@ActivityParam(isShowToolBar = true, isImmerse = false, isSkin = true)
+public class SkinDemoActivity extends BaseSkinActivity implements View.OnClickListener {
 
     private Button btnChangeColor;
     private Button btnChangeSkin;
+    private Button btnDefault;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,10 +22,11 @@ public class SkinDemoActivity extends BaseActivity implements View.OnClickListen
 
         btnChangeColor = getView(R.id.btn_change_color);
         btnChangeSkin = getView(R.id.btn_change_skin);
+        btnDefault = getView(R.id.btn_default);
 
         btnChangeColor.setOnClickListener(this);
         btnChangeSkin.setOnClickListener(this);
-
+        btnDefault.setOnClickListener(this);
     }
 
     @Override
@@ -40,6 +37,9 @@ public class SkinDemoActivity extends BaseActivity implements View.OnClickListen
                 break;
             case R.id.btn_change_skin:
                 SkinManager.getInstance().load("dark");
+                break;
+            case R.id.btn_default:
+                SkinManager.getInstance().restoreDefaultTheme();
                 break;
             default:
                 break;

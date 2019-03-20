@@ -3,4 +3,11 @@
     <color name="colorPrimary_dark">#F40815</color>
     <color name="colorPrimaryDark_dark">#F40815</color>
     <color name="colorAccent_dark">#303F9F</color>
+
+    <color name="toolbarBackground_dark">#F40815</color>
+    <color name="toolbarTitleTextColor_dark">#FF000000</color>
+    <color name="toolbarLeftTextColor_dark">#FF000000</color>
+    <color name="toolbarRightTextColor_dark">#FF000000</color>
+    <color name="toolbarLeftBackground_dark">#00FFFFFF</color>
+    <color name="toolbarRightBackground_dark">#00FFFFFF</color>
 </resources>
