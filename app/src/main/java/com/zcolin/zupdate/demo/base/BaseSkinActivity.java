@@ -10,6 +10,7 @@
 package com.zcolin.zupdate.demo.base;
 
 import android.app.ProgressDialog;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -136,7 +137,7 @@ public abstract class BaseSkinActivity extends BaseFrameActivity implements ISki
         }
         super.onCreate(savedInstanceState);
         if (activityParam[INDEX_ISSKIN]) {
-            changeStatusColor();
+//            changeStatusColor();
         }
 
         if (activityParam[INDEX_ISFULLSCREEN] && Build.VERSION.SDK_INT >= 19) {
@@ -172,14 +173,14 @@ public abstract class BaseSkinActivity extends BaseFrameActivity implements ISki
             return;
         }
         mSkinInflaterFactory.applySkin();
-        changeStatusColor();
+//        changeStatusColor();
     }
 
     public void changeStatusColor() {
         //如果当前的Android系统版本大于4.4则更改状态栏颜色
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Log.i("SkinBaseActivity", "changeStatus");
-            int color = SkinManager.getInstance().getColorPrimaryDark();
+            int color = SkinManager.getInstance().getStatusColor();
             StatusBarBackground statusBarBackground = new StatusBarBackground(this, color);
             if (color != -1) {
                 statusBarBackground.setStatusBarbackColor();
@@ -250,9 +251,9 @@ public abstract class BaseSkinActivity extends BaseFrameActivity implements ISki
 
     protected ViewGroup initToolBar(View userView) {
         /*获取主题中定义的悬浮标志*/
-        //        TypedArray typedArray = getTheme().obtainStyledAttributes(R.styleable.ToolBarTheme);
-        //        boolean overly = typedArray.getBoolean(R.styleable.ToolBarTheme_android_windowActionBarOverlay, false);
-        //        typedArray.recycle();
+        TypedArray typedArray = getTheme().obtainStyledAttributes(R.styleable.ToolBarTheme);
+        boolean overly = typedArray.getBoolean(R.styleable.ToolBarTheme_android_windowActionBarOverlay, false);
+        typedArray.recycle();
 
         /*将toolbar引入到父容器中*/
         View toolbarLay = LayoutInflater.from(this).inflate(R.layout.tsf_view_base_toolbar, null);
@@ -275,18 +276,21 @@ public abstract class BaseSkinActivity extends BaseFrameActivity implements ISki
 
         if (activityParam[INDEX_ISSKIN]){
             mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbar, AttrFactory.BACKGROUND, R.color.colorPrimary);
-            mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarTitleView, AttrFactory.TEXT_COLOR, R.color.colorPrimary);
+//            mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarTitleView, AttrFactory.STYLE, R.style.TextStyle_TCPrimary_Big);
+            mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarTitleView, AttrFactory.TEXT_COLOR, R.color.toolbarTitleTextColor);
             mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarLeftBtn, AttrFactory.BACKGROUND, R.color.toolbarLeftBackground);
+//            mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarLeftBtn, AttrFactory.STYLE, R.style.TextStyle_TCPrimary_Small);
             mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarLeftBtn, AttrFactory.TEXT_COLOR, R.color.toolbarLeftTextColor);
             mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarLeftBtn, AttrFactory.DRAWABLE_LEFT,0);
             mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarRightBtn, AttrFactory.BACKGROUND, R.color.toolbarRightBackground);
+//            mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarRightBtn, AttrFactory.STYLE, R.style.TextStyle_TCSubPrimary_Small);
             mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarRightBtn, AttrFactory.TEXT_COLOR, R.color.toolbarRightTextColor);
             mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarRightBtn, AttrFactory.DRAWABLE_LEFT, 0);
         }
 
         /*直接创建一个布局，作为视图容器的父容器*/
         ViewGroup contentView;
-        if (true) {
+        if (overly) {
             //不明原因导致布局向右移动了一些，移动回来
             RelativeLayout.LayoutParams layParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layParam.leftMargin = DisplayUtil.dip2px(mActivity, -10);

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary_dark">#F40815</color>
-    <color name="colorPrimaryDark_dark">#F40815</color>
+    <color name="colorPrimary_dark">#FF4081</color>
+    <color name="colorPrimaryDark_dark">#FF4081</color>
     <color name="colorAccent_dark">#303F9F</color>
+    <color name="colorStatus_dark">#FF4081</color>
 
-    <color name="toolbarBackground_dark">#F40815</color>
+    <color name="toolbarBackground_dark">#FF4081</color>
     <color name="toolbarTitleTextColor_dark">#FF000000</color>
     <color name="toolbarLeftTextColor_dark">#FF000000</color>
     <color name="toolbarRightTextColor_dark">#FF000000</color>

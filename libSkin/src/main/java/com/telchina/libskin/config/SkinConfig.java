@@ -14,6 +14,7 @@ public class SkinConfig {
     public static final String CUSTOM_SKIN      = "custom_skin";
     public static final String DEFALT_SKIN      = "default";//默认皮肤
     public static final String ATTR_SKIN_ENABLE = "skinEnable";
+    public static final String STATUS_COLOR     = "colorStatus";//状态栏颜色值的key
 
     /**
      * get path of last skin package path

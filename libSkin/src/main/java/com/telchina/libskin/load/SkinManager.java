@@ -37,13 +37,14 @@ public class SkinManager implements ISkinLoader {
         context = ctx.getApplicationContext();
     }
 
-    public int getColorPrimaryDark() {
+    /**
+     * 根据skin获取状态栏背景颜色
+     */
+    public int getStatusColor() {
         String skinName = SkinConfig.getCustomSkinPath(context);
-        String name = null;
-        if (SkinConfig.DEFALT_SKIN.equals(skinName)) {
-            name = "colorPrimaryDark";
-        } else {
-            name = "colorPrimaryDark_" + skinName;
+        String name = SkinConfig.STATUS_COLOR;
+        if (!SkinConfig.DEFALT_SKIN.equals(skinName)) {
+            name = SkinConfig.STATUS_COLOR + "_" + skinName;
         }
         if (mResources != null) {
             int identify = mResources.getIdentifier(name, "color", context.getPackageName());
@@ -189,19 +190,20 @@ public class SkinManager implements ISkinLoader {
 
         return trueDrawable;
     }
-    public int getStyle(String resName){
-        int orignStyle=mResources.getIdentifier(resName, "style", context.getPackageName());
+
+    public int getStyle(String resName) {
+        int orignStyle = mResources.getIdentifier(resName, "style", context.getPackageName());
         if (mResources == null || isDefaultSkin) {
             return orignStyle;
         }
-        String skinName=SkinConfig.getCustomSkinPath(context);
-        int trueResId = mResources.getIdentifier(resName+"_"+skinName, "style", context.getPackageName());
-        int tureStyle=0;
-        try{
-            tureStyle=trueResId;
-        }catch (Resources.NotFoundException e){
+        String skinName = SkinConfig.getCustomSkinPath(context);
+        int trueResId = mResources.getIdentifier(resName + "_" + skinName, "style", context.getPackageName());
+        int tureStyle = 0;
+        try {
+            tureStyle = trueResId;
+        } catch (Resources.NotFoundException e) {
             e.printStackTrace();
-            tureStyle=orignStyle;
+            tureStyle = orignStyle;
         }
         return tureStyle;
     }

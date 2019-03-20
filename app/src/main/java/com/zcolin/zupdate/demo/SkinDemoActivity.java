@@ -8,7 +8,7 @@ import com.telchina.libskin.load.SkinManager;
 import com.zcolin.zupdate.demo.base.ActivityParam;
 import com.zcolin.zupdate.demo.base.BaseSkinActivity;
 
-@ActivityParam(isShowToolBar = true, isImmerse = false, isSkin = true)
+@ActivityParam(isImmerse = true, isSkin = true)
 public class SkinDemoActivity extends BaseSkinActivity implements View.OnClickListener {
 
     private Button btnChangeColor;
@@ -19,6 +19,8 @@ public class SkinDemoActivity extends BaseSkinActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_skin_demo);
+
+        setToolbarTitle("换肤测试");
 
         btnChangeColor = getView(R.id.btn_change_color);
         btnChangeSkin = getView(R.id.btn_change_skin);

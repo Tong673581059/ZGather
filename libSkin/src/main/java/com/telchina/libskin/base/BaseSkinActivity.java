@@ -66,7 +66,7 @@ public class BaseSkinActivity extends BaseFrameActivity implements ISkinUpdate, 
         //如果当前的Android系统版本大于4.4则更改状态栏颜色
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Log.i("SkinBaseActivity", "changeStatus");
-            int color = SkinManager.getInstance().getColorPrimaryDark();
+            int color = SkinManager.getInstance().getStatusColor();
             StatusBarBackground statusBarBackground = new StatusBarBackground(this, color);
             if (color != -1) {
                 statusBarBackground.setStatusBarbackColor();
