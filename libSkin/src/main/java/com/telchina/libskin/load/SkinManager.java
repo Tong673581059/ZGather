@@ -21,10 +21,10 @@ import java.util.List;
  */
 public class SkinManager implements ISkinLoader {
 
-    private List<ISkinUpdate> mSkinObservers;
-    private static volatile SkinManager mInstance;
-    private Context context;
-    private Resources mResources;
+    private                 List<ISkinUpdate> mSkinObservers;
+    private static volatile SkinManager       mInstance;
+    private                 Context           context;
+    private                 Resources         mResources;
     private boolean isDefaultSkin = false;//当前的皮肤是否是默认的
     private String skinPackageName;//皮肤的包名
     private String skinPath;//皮肤路径
@@ -37,12 +37,12 @@ public class SkinManager implements ISkinLoader {
     }
 
     public int getColorPrimaryDark() {
-        String skinname=SkinConfig.getCustomSkinPath(context);
-        String name=null;
-        if(SkinConfig.DEFALT_SKIN.equals(skinname)) {
+        String skinName = SkinConfig.getCustomSkinPath(context);
+        String name = null;
+        if (SkinConfig.DEFALT_SKIN.equals(skinName)) {
             name = "colorPrimaryDark";
-        }else{
-            name="colorPrimaryDark_"+skinname;
+        } else {
+            name = "colorPrimaryDark_" + skinName;
         }
         if (mResources != null) {
             int identify = mResources.getIdentifier(name, "color", context.getPackageName());
@@ -53,8 +53,6 @@ public class SkinManager implements ISkinLoader {
 
     /**
      * 判断当前使用的皮肤是否来自外部
-     *
-     * @return
      */
     public boolean isExternalSkin() {
         return !isDefaultSkin && mResources != null;
@@ -62,8 +60,6 @@ public class SkinManager implements ISkinLoader {
 
     /**
      * 得到当前的皮肤路径
-     *
-     * @return
      */
     public String getSkinPath() {
         return skinPath;
@@ -71,8 +67,6 @@ public class SkinManager implements ISkinLoader {
 
     /**
      * 得到当前皮肤的包名
-     *
-     * @return
      */
     public String getSkinPackageName() {
         return skinPackageName;
@@ -141,7 +135,7 @@ public class SkinManager implements ISkinLoader {
 
 
     public void load(String skinPackagePath) {
-        mResources=context.getResources();
+        mResources = context.getResources();
         SkinConfig.saveSkinPath(context, skinPackagePath);
         skinPath = skinPackagePath;
         isDefaultSkin = false;
@@ -153,7 +147,7 @@ public class SkinManager implements ISkinLoader {
         if (mResources == null || isDefaultSkin) {
             return originColor;
         }
-        String skinName=SkinConfig.getCustomSkinPath(context);
+        String skinName = SkinConfig.getCustomSkinPath(context);
         String resName = context.getResources().getResourceEntryName(resId);
         resName = resName + "_" + skinName;
 
@@ -176,8 +170,8 @@ public class SkinManager implements ISkinLoader {
             return originDrawable;
         }
         String resName = context.getResources().getResourceEntryName(resId);
-        String skinName=SkinConfig.getCustomSkinPath(context);
-        int trueResId = mResources.getIdentifier(resName+"_"+skinName, "drawable", context.getPackageName());
+        String skinName = SkinConfig.getCustomSkinPath(context);
+        int trueResId = mResources.getIdentifier(resName + "_" + skinName, "drawable", context.getPackageName());
 
         Drawable trueDrawable = null;
         try {
@@ -198,10 +192,6 @@ public class SkinManager implements ISkinLoader {
     /**
      * 加载指定资源颜色drawable,转化为ColorStateList，保证selector类型的Color也能被转换。</br>
      * 无皮肤包资源返回默认主题颜色
-     *
-     * @param resId
-     * @return
-     * @author pinotao
      */
     public ColorStateList convertToColorStateList(int resId) {
         boolean isExtendSkin = true;
@@ -211,7 +201,7 @@ public class SkinManager implements ISkinLoader {
 
         String resName = context.getResources().getResourceEntryName(resId);
         if (isExtendSkin) {
-            int trueResId = mResources.getIdentifier(resName+"_"+skinPath, "color", context.getPackageName());
+            int trueResId = mResources.getIdentifier(resName + "_" + skinPath, "color", context.getPackageName());
             ColorStateList trueColorList = null;
             if (trueResId == 0) { // 如果皮肤包没有复写该资源，但是需要判断是否是ColorStateList
                 try {

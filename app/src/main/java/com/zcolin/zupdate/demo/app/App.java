@@ -7,7 +7,7 @@
  * ********************************************************
  */
 
-package app;
+package com.zcolin.zupdate.demo.app;
 
 
 
@@ -46,12 +46,11 @@ public class App extends BaseApp {
         //if (BuildConfig.DEBUG) {
         //    Stetho.initializeWithDefaults(this);
         //}
+        isPad = ScreenUtil.isTablet(this);
         SkinManager.getInstance().init(this);
         SkinManager.getInstance().load();
-        isPad = ScreenUtil.isTablet(this);
 //        LogUtil.LOG_DEBUG = BuildConfig.DEBUG;
 //        initHttpOptions();
-//        tsfConfig = new TSFConfig(); //todo 设置默认配置类，可自定义设置
     }
 
     @Override

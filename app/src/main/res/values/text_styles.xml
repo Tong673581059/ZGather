@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <style name="TextStyle_TCPrimary_Small" parent="@android:style/Widget.TextView">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">@dimen/gui_dimens_small</item>
+    </style>
+
+
+    <style name="TextStyle_TCPrimary_Big" parent="@android:style/Widget.TextView">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">@dimen/gui_dimens_big</item>
+    </style>
+
+    <style name="TextStyle_TCSubPrimary_Small" parent="@android:style/Widget.TextView">
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textSize">@dimen/gui_dimens_small</item>
+    </style>
+</resources>

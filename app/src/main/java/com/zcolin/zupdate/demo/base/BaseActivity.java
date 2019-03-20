@@ -7,10 +7,9 @@
  * ********************************************************
  */
 
-package base;
+package com.zcolin.zupdate.demo.base;
 
 import android.app.ProgressDialog;
-import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.telchina.libskin.base.BaseSkinActivity;
 import com.zcolin.frame.app.BaseFrameActivity;
 import com.zcolin.frame.util.DisplayUtil;
 import com.zcolin.frame.util.ScreenUtil;
@@ -48,7 +48,7 @@ import java.lang.reflect.Method;
  * <p/>
  * 沉浸模式是否需要空出顶部状态栏距离{@link ActivityParam() isImmersePaddingTop default false}
  */
-public abstract class BaseActivity extends BaseFrameActivity {
+public abstract class BaseActivity extends BaseSkinActivity {
     /*参数在数组中的Index*/
     private static final int INDEX_ISIMMERSE           = 0;
     private static final int INDEX_ISFULLSCREEN        = 1;

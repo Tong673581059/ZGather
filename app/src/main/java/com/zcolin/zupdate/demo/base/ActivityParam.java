@@ -7,7 +7,7 @@
  * ********************************************************
  */
 
-package base;
+package com.zcolin.zupdate.demo.base;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

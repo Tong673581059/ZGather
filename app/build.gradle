@@ -5,16 +5,22 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     defaultConfig {
         applicationId "com.zcolin.zupdate.demo"
-        minSdkVersion 15
-        targetSdkVersion 24
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+        multiDexEnabled true
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -23,9 +29,8 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$supprotVersion"
     implementation "com.android.support:design:$supprotVersion"
     implementation "com.android.support:recyclerview-v7:$supprotVersion"
-    implementation 'com.github.zcolin:ZFrame:2.0.0'
-    //程序框架
-    implementation 'com.github.zcolin:ZUILib:2.0.0'
-    //UI库
+    implementation 'com.github.z-pivot:ZFrame:2.1.1'//程序框架
+    implementation 'com.github.zcolin:ZUILib:2.0.0'//UI库
     implementation project(':libSkin')
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 }
