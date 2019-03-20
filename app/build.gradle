@@ -19,10 +19,13 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "com.android.support:appcompat-v7:$supprotVersion"
     implementation "com.android.support:design:$supprotVersion"
     implementation "com.android.support:recyclerview-v7:$supprotVersion"
-    implementation "com.github.zcolin:ZFrame:2.0.0"//程序框架 
-    implementation "com.github.zcolin:ZUILib:2.0.0"//UI库
+    implementation 'com.github.zcolin:ZFrame:2.0.0'
+    //程序框架
+    implementation 'com.github.zcolin:ZUILib:2.0.0'
+    //UI库
+    implementation project(':libSkin')
 }

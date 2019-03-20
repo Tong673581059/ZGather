@@ -1,1 +1,1 @@
-include ':app', ':libUpdate'
+include ':app', ':libUpdate', ':libSkin'
