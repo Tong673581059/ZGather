@@ -17,6 +17,7 @@ public class AttrFactory {
     public static final String CONTENT_SCRIM_COLOR  = "contentScrimColor";
     public static final String BACKGROUND_TINTLIST  = "backgroundTint";
     public static final String NAVIGATION_VIEW_MENU = "navigationViewMenu";
+    public static final String STYLE                = "style";
 
     public static final String DRAWABLE_LEFT   = "drawableLeft";
     public static final String DRAWABLE_RIGHT  = "drawableRight";
@@ -48,6 +49,8 @@ public class AttrFactory {
             Log.i(TAG, "create:FabButtonAttr");
         } else if (DRAWABLE_LEFT.equals(attrName)) {
             mSkinAttr = new DrawableAttr();
+        } else if (STYLE.equals(attrName)) {
+            mSkinAttr=new StyleAttr();
         } else {
             return null;
         }
@@ -79,6 +82,9 @@ public class AttrFactory {
             return true;
         }
         if (BACKGROUND_TINTLIST.equals(attrName)) {
+            return true;
+        }
+        if (STYLE.equals(attrName)){
             return true;
         }
         return NAVIGATION_VIEW_MENU.equals(attrName);
