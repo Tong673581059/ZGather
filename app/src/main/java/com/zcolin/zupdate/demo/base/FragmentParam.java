@@ -22,6 +22,7 @@ public @interface FragmentParam {
     boolean ISSHOWTOOLBAR_DEF_VALUE       = false;
     boolean ISSHOWRETURN_DEF_VALUE        = false;
     boolean ISIMMERSEPADDINGTOP_DEF_VALUE = false;
+    boolean ISSKIN_DEF_VALUE              = false;
 
     /**
      * 是否显示toolbar
@@ -37,4 +38,9 @@ public @interface FragmentParam {
      * 如果是沉浸式状态栏，是否空出顶部距离
      */
     boolean isImmersePaddingTop() default ISIMMERSEPADDINGTOP_DEF_VALUE;
+
+    /**
+     * 是否需要换肤功能
+     */
+    boolean isSkin() default ISSKIN_DEF_VALUE;
 }

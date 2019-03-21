@@ -172,8 +172,8 @@ public class SkinInflaterFactory implements LayoutInflaterFactory {
      * @param attrValueResId 属性资源id
      */
     public void dynamicAddSkinEnableView(Context context, View view, String attrName, int attrValueResId) {
-        if (attrValueResId > 0) {
-            int id = attrValueResId;
+        int id = attrValueResId;
+        if (id > 0) {
             String entryName = context.getResources().getResourceEntryName(id);
             String typeName = context.getResources().getResourceTypeName(id);
             SkinAttr mSkinAttr = AttrFactory.get(attrName, id, entryName, typeName);
@@ -197,10 +197,12 @@ public class SkinInflaterFactory implements LayoutInflaterFactory {
 
         for (DynamicAttr dAttr : pDAttrs) {
             int id = dAttr.refResId;
-            String entryName = context.getResources().getResourceEntryName(id);
-            String typeName = context.getResources().getResourceTypeName(id);
-            SkinAttr mSkinAttr = AttrFactory.get(dAttr.attrName, id, entryName, typeName);
-            viewAttrs.add(mSkinAttr);
+            if (id > 0) {
+                String entryName = context.getResources().getResourceEntryName(id);
+                String typeName = context.getResources().getResourceTypeName(id);
+                SkinAttr mSkinAttr = AttrFactory.get(dAttr.attrName, id, entryName, typeName);
+                viewAttrs.add(mSkinAttr);
+            }
         }
 
         skinItem.attrs = viewAttrs;

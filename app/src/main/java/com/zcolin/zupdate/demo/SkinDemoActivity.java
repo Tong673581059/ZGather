@@ -6,10 +6,10 @@ import android.widget.Button;
 
 import com.telchina.libskin.load.SkinManager;
 import com.zcolin.zupdate.demo.base.ActivityParam;
-import com.zcolin.zupdate.demo.base.BaseSkinActivity;
+import com.zcolin.zupdate.demo.base.BaseActivity;
 
 @ActivityParam(isImmerse = true, isSkin = true)
-public class SkinDemoActivity extends BaseSkinActivity implements View.OnClickListener {
+public class SkinDemoActivity extends BaseActivity implements View.OnClickListener {
 
     private Button btnChangeColor;
     private Button btnChangeSkin;
@@ -29,6 +29,7 @@ public class SkinDemoActivity extends BaseSkinActivity implements View.OnClickLi
         btnChangeColor.setOnClickListener(this);
         btnChangeSkin.setOnClickListener(this);
         btnDefault.setOnClickListener(this);
+
     }
 
     @Override
