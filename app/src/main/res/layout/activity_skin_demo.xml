@@ -34,5 +34,10 @@
         android:text="默认"
         android:layout_margin="@dimen/gui_dimens_mid"
         skin:skinEnable="true"/>
+    <com.zcolin.gui.zrecyclerview.ZRecyclerView
+        android:id="@+id/recyclerView"
+        skin:skinEnable="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></com.zcolin.gui.zrecyclerview.ZRecyclerView>
 
 </LinearLayout>

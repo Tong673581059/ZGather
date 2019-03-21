@@ -20,9 +20,6 @@ public class StyleAttr extends SkinAttr {
             if(view instanceof TextView){
                 TextView textView= (TextView) view;
                 textView.setTextAppearance(SkinManager.getInstance().getStyle(attrValueRefName));
-            }else if(view instanceof Button){
-                Button button= (Button) view;
-                button.setTextAppearance(SkinManager.getInstance().getStyle(attrValueRefName));
             }
         }
     }

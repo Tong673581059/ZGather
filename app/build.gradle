@@ -33,4 +33,5 @@ dependencies {
     implementation 'com.github.zcolin:ZUILib:2.0.0'//UI库
     implementation project(':libSkin')
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'com.github.zcolin:ZRecyclerView:2.1.5'
 }
