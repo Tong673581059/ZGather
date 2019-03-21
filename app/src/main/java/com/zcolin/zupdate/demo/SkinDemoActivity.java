@@ -1,7 +1,6 @@
 package com.zcolin.zupdate.demo;
 
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 
@@ -9,7 +8,6 @@ import com.telchina.libskin.load.SkinManager;
 import com.zcolin.gui.zrecyclerview.ZRecyclerView;
 import com.zcolin.zupdate.demo.base.ActivityParam;
 import com.zcolin.zupdate.demo.base.BaseSkinActivity;
-import com.zcolin.zupdate.demo.base.DialogDemo;
 
 import java.util.ArrayList;
 import java.util.List;
