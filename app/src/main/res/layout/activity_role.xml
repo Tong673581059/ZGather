@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".RoleActivity">
+
+    <Button
+        android:id="@+id/mBtn1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="正常权限1"/>
+
+    <Button
+        android:id="@+id/mBtn2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="隐藏权限2"/>
+
+    <Button
+        android:id="@+id/mBtn3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="显示权限不可点击3"/>
+
+    <Button
+        android:id="@+id/mBtn4"
+        android:layout_width="match_parent"
+        android:text="默认权限null"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

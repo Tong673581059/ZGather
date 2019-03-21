@@ -1,8 +1,8 @@
 /*
  * *********************************************************
- *   author   zhuxuetong
+ *   author   colin
  *   company  telchina
- *   email    zhuxuetong123@163.com
+ *   email    wanglin2046@126.com
  *   date     18-1-9 下午5:16
  * ********************************************************
  */
@@ -15,10 +15,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
-import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,13 +25,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.telchina.libskin.attr.AttrFactory;
-import com.telchina.libskin.attr.DynamicAttr;
-import com.telchina.libskin.listener.IDynamicNewView;
-import com.telchina.libskin.listener.ISkinUpdate;
-import com.telchina.libskin.load.SkinInflaterFactory;
-import com.telchina.libskin.load.SkinManager;
-import com.telchina.libskin.statusbar.StatusBarBackground;
 import com.zcolin.frame.app.BaseFrameActivity;
 import com.zcolin.frame.util.DisplayUtil;
 import com.zcolin.frame.util.ScreenUtil;
@@ -48,7 +39,6 @@ import com.zcolin.zupdate.demo.role.RoleMgr;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.List;
 
 
 /**
@@ -63,32 +53,24 @@ import java.util.List;
  * 是否需要全屏的  {@link ActivityParam()} isFullScreen  default true}
  * <p/>
  * 沉浸模式是否需要空出顶部状态栏距离{@link ActivityParam() isImmersePaddingTop default false}
- * <p/>
- * 是否需要换肤功能{@link ActivityParam() isSkin default false}
- * <p/>
- * 是否需要权限控制{@link ActivityParam() isRole default false}
  */
-public abstract class BaseActivity extends BaseFrameActivity implements ISkinUpdate, IDynamicNewView {
+public abstract class BaseRoleActivity extends BaseFrameActivity {
     /*参数在数组中的Index*/
     private static final int INDEX_ISIMMERSE           = 0;
     private static final int INDEX_ISFULLSCREEN        = 1;
     private static final int INDEX_ISIMMERSEPADDINGTOP = 2;
     private static final int INDEX_ISSHOWTOOLBAR       = 3;
     private static final int INDEX_ISSHOWRETURN        = 4;
-    private static final int INDEX_ISSKIN              = 5;
-    private static final int INDEX_ISROLE              = 6;
+    private static final int INDEX_ISROLE              = 5;
 
     private boolean[] activityParam = new boolean[]{ActivityParam.ISIMMERSE_DEF_VALUE, ActivityParam.ISFULLSCREEN_DEF_VALUE, ActivityParam
-            .ISIMMERSEPADDINGTOP_DEF_VALUE, ActivityParam.ISSHOWTOOLBAR_DEF_VALUE, ActivityParam.ISSHOWRETURN_DEF_VALUE,
-            ActivityParam.ISSKIN_DEF_VALUE, ActivityParam.ISROLE_DEF_VALUE};
+            .ISIMMERSEPADDINGTOP_DEF_VALUE, ActivityParam.ISSHOWTOOLBAR_DEF_VALUE, ActivityParam.ISSHOWRETURN_DEF_VALUE, ActivityParam.ISROLE_DEF_VALUE};
 
     private Toolbar  toolbar;
     private View     toolBarView;           //自定义的toolBar的布局
     private TextView toolbarTitleView;       //标题 居中
     private TextView toolbarLeftBtn;        //最左侧预制按钮，一般防止返回
     private TextView toolbarRightBtn;        //最右侧预制按钮
-
-    protected SkinInflaterFactory mSkinInflaterFactory;
 
     /**
      * 注解注入值获取
@@ -101,7 +83,6 @@ public abstract class BaseActivity extends BaseFrameActivity implements ISkinUpd
             activityParam[INDEX_ISIMMERSEPADDINGTOP] = requestParamsUrl.isImmersePaddingTop();
             activityParam[INDEX_ISSHOWTOOLBAR] = requestParamsUrl.isShowToolBar();
             activityParam[INDEX_ISSHOWRETURN] = requestParamsUrl.isShowReturn();
-            activityParam[INDEX_ISSKIN] = requestParamsUrl.isSkin();
             activityParam[INDEX_ISROLE] = requestParamsUrl.isRole();
         }
     }
@@ -182,16 +163,9 @@ public abstract class BaseActivity extends BaseFrameActivity implements ISkinUpd
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        injectActivityParam();
-        //如果需要换肤，用自定义的InflaterFactory，用来代替默认的InflaterFactory
-        if (activityParam[INDEX_ISSKIN]) {
-            mSkinInflaterFactory = new SkinInflaterFactory();
-            LayoutInflaterCompat.setFactory(getLayoutInflater(), mSkinInflaterFactory);
-        }
         super.onCreate(savedInstanceState);
-        if (activityParam[INDEX_ISSKIN]) {
-//            changeStatusColor();
-        }
+        injectActivityParam();
+
 
         if (activityParam[INDEX_ISFULLSCREEN] && Build.VERSION.SDK_INT >= 19) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -199,45 +173,6 @@ public abstract class BaseActivity extends BaseFrameActivity implements ISkinUpd
         } else if (activityParam[INDEX_ISIMMERSE] && Build.VERSION.SDK_INT >= 19) {
             //透明状态栏
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (activityParam[INDEX_ISSKIN]) {
-            SkinManager.getInstance().attach(this);
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (activityParam[INDEX_ISSKIN]) {
-            SkinManager.getInstance().detach(this);
-            mSkinInflaterFactory.clean();
-        }
-    }
-
-    @Override
-    public void onThemeUpdate() {
-        Log.i("SkinBaseActivity", "onThemeUpdate");
-        if (!activityParam[INDEX_ISSKIN]) {
-            return;
-        }
-        mSkinInflaterFactory.applySkin();
-//        changeStatusColor();
-    }
-
-    public void changeStatusColor() {
-        //如果当前的Android系统版本大于4.4则更改状态栏颜色
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Log.i("SkinBaseActivity", "changeStatus");
-            int color = SkinManager.getInstance().getStatusColor();
-            StatusBarBackground statusBarBackground = new StatusBarBackground(this, color);
-            if (color != -1) {
-                statusBarBackground.setStatusBarbackColor();
-            }
         }
     }
 
@@ -267,6 +202,7 @@ public abstract class BaseActivity extends BaseFrameActivity implements ISkinUpd
         }
 
         injectZClick();
+//        injectRole();
     }
 
     @Override
@@ -289,6 +225,7 @@ public abstract class BaseActivity extends BaseFrameActivity implements ISkinUpd
         }
 
         injectZClick();
+//        injectRole();
     }
 
 
@@ -322,20 +259,6 @@ public abstract class BaseActivity extends BaseFrameActivity implements ISkinUpd
         toolbarLeftBtn.setOnClickListener(clickListener);
         toolbarRightBtn.setOnClickListener(clickListener);
 
-        if (activityParam[INDEX_ISSKIN]){
-            mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbar, AttrFactory.BACKGROUND, R.color.colorPrimary);
-//            mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarTitleView, AttrFactory.STYLE, R.style.TextStyle_TCPrimary_Big);
-            mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarTitleView, AttrFactory.TEXT_COLOR, R.color.toolbarTitleTextColor);
-            mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarLeftBtn, AttrFactory.BACKGROUND, R.color.toolbarLeftBackground);
-//            mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarLeftBtn, AttrFactory.STYLE, R.style.TextStyle_TCPrimary_Small);
-            mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarLeftBtn, AttrFactory.TEXT_COLOR, R.color.toolbarLeftTextColor);
-            mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarLeftBtn, AttrFactory.DRAWABLE_LEFT,0);
-            mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarRightBtn, AttrFactory.BACKGROUND, R.color.toolbarRightBackground);
-//            mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarRightBtn, AttrFactory.STYLE, R.style.TextStyle_TCSubPrimary_Small);
-            mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarRightBtn, AttrFactory.TEXT_COLOR, R.color.toolbarRightTextColor);
-            mSkinInflaterFactory.dynamicAddSkinEnableView(this, toolbarRightBtn, AttrFactory.DRAWABLE_LEFT, 0);
-        }
-
         /*直接创建一个布局，作为视图容器的父容器*/
         ViewGroup contentView;
         if (overly) {
@@ -368,37 +291,6 @@ public abstract class BaseActivity extends BaseFrameActivity implements ISkinUpd
 
     public boolean isImmerse() {
         return activityParam[INDEX_ISIMMERSE];
-    }
-
-    public boolean isSkin() {
-        return activityParam[INDEX_ISSKIN];
-    }
-
-    /**
-     *  返回自定义的InflaterFactory
-     */
-    public SkinInflaterFactory getSkinInflaterFactory() {
-        return mSkinInflaterFactory;
-    }
-
-    /**
-     * 动态添加那些有皮肤更改需求的View，及其对应的属性
-     */
-    @Override
-    public void dynamicAddView(View view, List<DynamicAttr> pDAttrs) {
-        mSkinInflaterFactory.dynamicAddSkinEnableView(this, view, pDAttrs);
-    }
-
-    /**
-     * 动态添加那些有皮肤更改需求的View，及其对应的属性
-     *
-     * @param attrName       属性名
-     * @param attrValueResId 属性资源id
-     */
-    public void dynamicAddSkinEnableView(View view, String attrName, int attrValueResId) {
-        if (mSkinInflaterFactory != null) {
-            mSkinInflaterFactory.dynamicAddSkinEnableView(this, view, attrName, attrValueResId);
-        }
     }
 
     /**

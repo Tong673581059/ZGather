@@ -5,15 +5,16 @@ import android.view.View;
 import android.widget.Button;
 
 import com.telchina.libskin.load.SkinManager;
+import com.zcolin.frame.util.ActivityUtil;
 import com.zcolin.gui.zrecyclerview.ZRecyclerView;
 import com.zcolin.zupdate.demo.base.ActivityParam;
-import com.zcolin.zupdate.demo.base.BaseSkinActivity;
+import com.zcolin.zupdate.demo.base.BaseActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @ActivityParam(isImmerse = true, isSkin = true)
-public class SkinDemoActivity extends BaseSkinActivity implements View.OnClickListener {
+public class SkinDemoActivity extends BaseActivity implements View.OnClickListener {
 
     private Button          btnChangeColor;
     private Button          btnChangeSkin;
@@ -57,6 +58,7 @@ public class SkinDemoActivity extends BaseSkinActivity implements View.OnClickLi
                 dialogDemo.show();
                 break;
             case R.id.btn_change_skin:
+                ActivityUtil.startActivity(this, RoleActivity.class);
                 SkinManager.getInstance().load("dark");
                 break;
             case R.id.btn_default:
