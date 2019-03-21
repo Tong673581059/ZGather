@@ -79,7 +79,7 @@ public abstract class BaseSkinActivity extends BaseFrameActivity implements ISki
     private TextView toolbarLeftBtn;        //最左侧预制按钮，一般防止返回
     private TextView toolbarRightBtn;        //最右侧预制按钮
 
-    private SkinInflaterFactory mSkinInflaterFactory;
+    protected SkinInflaterFactory mSkinInflaterFactory;
 
     /**
      * 注解注入值获取
@@ -187,12 +187,6 @@ public abstract class BaseSkinActivity extends BaseFrameActivity implements ISki
             }
         }
     }
-
-    @Override
-    public void dynamicAddView(View view, List<DynamicAttr> pDAttrs) {
-        mSkinInflaterFactory.dynamicAddSkinEnableView(this, view, pDAttrs);
-    }
-
 
     @Override
     protected void onStart() {
@@ -320,6 +314,37 @@ public abstract class BaseSkinActivity extends BaseFrameActivity implements ISki
 
     public boolean isImmerse() {
         return activityParam[INDEX_ISIMMERSE];
+    }
+
+    public boolean isSkin() {
+        return activityParam[INDEX_ISSKIN];
+    }
+
+    /**
+     *  返回自定义的InflaterFactory
+     */
+    public SkinInflaterFactory getSkinInflaterFactory() {
+        return mSkinInflaterFactory;
+    }
+
+    /**
+     * 动态添加那些有皮肤更改需求的View，及其对应的属性
+     */
+    @Override
+    public void dynamicAddView(View view, List<DynamicAttr> pDAttrs) {
+        mSkinInflaterFactory.dynamicAddSkinEnableView(this, view, pDAttrs);
+    }
+
+    /**
+     * 动态添加那些有皮肤更改需求的View，及其对应的属性
+     *
+     * @param attrName       属性名
+     * @param attrValueResId 属性资源id
+     */
+    public void dynamicAddSkinEnableView(View view, String attrName, int attrValueResId) {
+        if (mSkinInflaterFactory != null) {
+            mSkinInflaterFactory.dynamicAddSkinEnableView(this, view, attrName, attrValueResId);
+        }
     }
 
     /**
