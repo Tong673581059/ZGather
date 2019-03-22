@@ -17,7 +17,7 @@ dependencies {
 }
 ```
 ##### 使用方法及特别注意
-#######一、自动更新
+#####一、自动更新
 ```
 ZUpdate.instance()
        .setUpdateUrl("")
@@ -26,7 +26,7 @@ ZUpdate.instance()
        .setDownloadSilent(true)
        .checkVersion(mActivity);
 ```
-#######二、换肤管理libSkin
+#####二、换肤管理libSkin
 ```
 (1) 在build.gradle中添加libSkin的依赖 implementation 'com.github.z-pivot.ZGather:libSkin:latest.release'
 (2) 主题皮肤的res资源文件。默认主题皮肤用默认的res资源文件；一套自定义主题皮肤对应资源文件命名统一以'_skinName'结尾
@@ -62,7 +62,7 @@ ZUpdate.instance()
 (6) 特别注意一下状态栏的颜色设置 如果皮肤管理需要改变状态栏颜色，调用changeStatusColor()
     状态栏对应的颜色命名：colorStatus、colorStatus_skinName，用其他名字不生效
 ```
-#######三、权限控制
+#####三、权限控制
 ```
 (1) 将Demo中的Role文件夹、base文件夹和需要的资源文件复制到项目中
 (2) Activity都集成BaseActivity或BaseRoleActivity，并在类头加开启权限控制的注解（@ActivityParam（isRole = true））
