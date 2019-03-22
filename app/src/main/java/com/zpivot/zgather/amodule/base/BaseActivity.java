@@ -91,7 +91,6 @@ public abstract class BaseActivity extends BaseFrameActivity implements ISkinUpd
     private SkinInflaterFactory mSkinInflaterFactory;
     private boolean isFirst = true;          //是否是第一次启动，用于控制权限管理在第一次onStart的时候执行
 
-
     /**
      * 注解注入值获取
      */

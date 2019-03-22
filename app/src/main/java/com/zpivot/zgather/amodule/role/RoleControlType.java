@@ -34,7 +34,7 @@ public enum RoleControlType {
     ROLE_GONE,
     
     /**
-     * 不可点击
+     * 显示，不可点击
      */
     ROLE_NO_CLICK,
 }

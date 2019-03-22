@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.zcolin.zupdate.demo.SkinDemoActivity">
+    tools:context=".demo.SkinDemoActivity">
 
     <Button
         android:id="@+id/btn_change_color"
