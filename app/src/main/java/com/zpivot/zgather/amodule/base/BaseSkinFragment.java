@@ -52,7 +52,7 @@ public abstract class BaseSkinFragment extends BaseFrameFrag implements IDynamic
     private static final int INDEX_ISSKIN              = 3;
 
     private boolean[] fragmentParam = new boolean[]{FragmentParam.ISSHOWTOOLBAR_DEF_VALUE, FragmentParam.ISSHOWRETURN_DEF_VALUE, FragmentParam
-            .ISIMMERSEPADDINGTOP_DEF_VALUE, ActivityParam.ISSKIN_DEF_VALUE};
+            .ISIMMERSEPADDINGTOP_DEF_VALUE};
 
     private View     toolBarView;           //自定义的toolBar的布局
     private TextView toolbarTitleView;       //标题 居中

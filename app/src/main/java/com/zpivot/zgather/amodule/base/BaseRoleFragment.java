@@ -9,28 +9,22 @@
 
 package com.zpivot.zgather.amodule.base;
 
-import android.app.ProgressDialog;
-import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
-import android.text.SpannableString;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.zcolin.frame.app.BaseFrameActivity;
+import com.zcolin.frame.app.BaseFrameFrag;
 import com.zcolin.frame.util.DisplayUtil;
 import com.zcolin.frame.util.ScreenUtil;
 import com.zcolin.frame.util.StringUtil;
 import com.zcolin.frame.util.ToastUtil;
-import com.zcolin.gui.ZDialogProgress;
 import com.zpivot.zgather.R;
 import com.zpivot.zgather.amodule.role.Role;
 import com.zpivot.zgather.amodule.role.RoleControlType;
@@ -40,52 +34,83 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-
 /**
- * 客户端Activity的基类
+ * 客户端Fragment的基类
  * <p>
- * 是否需要沉浸式的  {@link ActivityParam()} isImmerse  default true}
- * <p>
- * 是否需要带ToolBar的  {@link ActivityParam()} isShowToolBar  default true}
+ * 是否需要带ToolBar的  {@link FragmentParam()} isShowToolBar  default true}
  * <p/>
- * 是否需要ToolBar带返回按钮并且实现了返回的  {@link ActivityParam()} isShowReturn  default true}
+ * 是否需要ToolBar带返回按钮并且实现了返回的  {@link FragmentParam()} isShowReturn  default true}
  * <p/>
- * 是否需要全屏的  {@link ActivityParam()} isFullScreen  default true}
+ * 沉浸模式是否需要空出顶部状态栏距离{@link FragmentParam() isImmersePaddingTop default false}
  * <p/>
- * 沉浸模式是否需要空出顶部状态栏距离{@link ActivityParam() isImmersePaddingTop default false}
+ * 是否需要权限控制{@link ActivityParam() isRole default false}
  */
-public abstract class BaseRoleActivity extends BaseFrameActivity {
-    /*参数在数组中的Index*/
-    private static final int INDEX_ISIMMERSE           = 0;
-    private static final int INDEX_ISFULLSCREEN        = 1;
+public abstract class BaseRoleFragment extends BaseFrameFrag {
+    private static final int INDEX_ISSHOWTOOLBAR       = 0;
+    private static final int INDEX_ISSHOWRETURN        = 1;
     private static final int INDEX_ISIMMERSEPADDINGTOP = 2;
-    private static final int INDEX_ISSHOWTOOLBAR       = 3;
-    private static final int INDEX_ISSHOWRETURN        = 4;
-    private static final int INDEX_ISROLE              = 5;
+    private static final int INDEX_ISROLE              = 3;
 
-    private boolean[] activityParam = new boolean[]{ActivityParam.ISIMMERSE_DEF_VALUE, ActivityParam.ISFULLSCREEN_DEF_VALUE, ActivityParam
-            .ISIMMERSEPADDINGTOP_DEF_VALUE, ActivityParam.ISSHOWTOOLBAR_DEF_VALUE, ActivityParam.ISSHOWRETURN_DEF_VALUE, ActivityParam.ISROLE_DEF_VALUE};
+    private boolean[] fragmentParam = new boolean[]{FragmentParam.ISSHOWTOOLBAR_DEF_VALUE, FragmentParam.ISSHOWRETURN_DEF_VALUE, FragmentParam
+            .ISIMMERSEPADDINGTOP_DEF_VALUE, FragmentParam.ISROLE_DEF_VALUE};
 
-    private Toolbar  toolbar;
     private View     toolBarView;           //自定义的toolBar的布局
     private TextView toolbarTitleView;       //标题 居中
     private TextView toolbarLeftBtn;        //最左侧预制按钮，一般防止返回
     private TextView toolbarRightBtn;        //最右侧预制按钮
 
-    private boolean isFirst = true;          //是否是第一次启动，用于控制权限管理在第一次onStart的时候执行
+    private View containView = null; //添加toolbar之后的最终view容器
+
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        /*在ViewPager切换过程中会重新调用onCreateView，此时如果实例化过，需要移除，会自动再次添加*/
+        if (containView == null) {
+            rootView = inflater.inflate(getRootViewLayId(), null);
+            injectFragmentParam();//注入
+            injectZClick();
+
+            //添加toolbar
+            if (fragmentParam[INDEX_ISSHOWTOOLBAR]) {
+                containView = initToolBar(rootView);
+                if (fragmentParam[INDEX_ISSHOWRETURN]) {
+                    setToolbarLeftBtnText(" ");
+                    setToolbarLeftBtnCompoundDrawableLeft(R.drawable.gui_icon_arrow_back);
+                }
+            } else {
+                containView = rootView;
+            }
+
+            createView(savedInstanceState);
+            isPrepared = true;
+            onPreLoad(savedInstanceState);
+        } else {
+            if (rootView.getParent() != null) {
+                ((ViewGroup) rootView.getParent()).removeView(containView);
+            }
+        }
+
+        injectRole();
+        return containView;
+    }
+
+
+    @Override
+    protected void createView(@Nullable Bundle savedInstanceState) {
+        super.createView(savedInstanceState);
+    }
 
     /**
      * 注解注入值获取
      */
-    private void injectActivityParam() {
-        ActivityParam requestParamsUrl = getClass().getAnnotation(ActivityParam.class);
+    private void injectFragmentParam() {
+        FragmentParam requestParamsUrl = getClass().getAnnotation(FragmentParam.class);
         if (requestParamsUrl != null) {
-            activityParam[INDEX_ISIMMERSE] = requestParamsUrl.isImmerse();
-            activityParam[INDEX_ISFULLSCREEN] = requestParamsUrl.isFullScreen();
-            activityParam[INDEX_ISIMMERSEPADDINGTOP] = requestParamsUrl.isImmersePaddingTop();
-            activityParam[INDEX_ISSHOWTOOLBAR] = requestParamsUrl.isShowToolBar();
-            activityParam[INDEX_ISSHOWRETURN] = requestParamsUrl.isShowReturn();
-            activityParam[INDEX_ISROLE] = requestParamsUrl.isRole();
+            fragmentParam[INDEX_ISSHOWTOOLBAR] = requestParamsUrl.isShowToolBar();
+            fragmentParam[INDEX_ISSHOWRETURN] = requestParamsUrl.isShowReturn();
+            fragmentParam[INDEX_ISIMMERSEPADDINGTOP] = requestParamsUrl.isImmersePaddingTop();
+            fragmentParam[INDEX_ISROLE] = requestParamsUrl.isRole();
         }
     }
 
@@ -101,18 +126,15 @@ public abstract class BaseRoleActivity extends BaseFrameActivity {
                     if (view == null) {
                         return;
                     }
-                    view.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            try {
-                                if (isHasParam) {
-                                    method.invoke(mActivity, view);
-                                } else {
-                                    method.invoke(mActivity);
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                    view.setOnClickListener(v -> {
+                        try {
+                            if (isHasParam) {
+                                method.invoke(BaseRoleFragment.this, view);
+                            } else {
+                                method.invoke(BaseRoleFragment.this);
                             }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     });
                 }
@@ -121,7 +143,7 @@ public abstract class BaseRoleActivity extends BaseFrameActivity {
     }
 
     private void injectRole() {
-        if (activityParam[INDEX_ISROLE]) {
+        if (fragmentParam[INDEX_ISROLE]) {
             Field[] fields = getClass().getDeclaredFields();
             if (fields != null && fields.length > 0) {
                 Class<?> acceptableType = View.class;
@@ -163,97 +185,16 @@ public abstract class BaseRoleActivity extends BaseFrameActivity {
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        injectActivityParam();
-
-
-        if (activityParam[INDEX_ISFULLSCREEN] && Build.VERSION.SDK_INT >= 19) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        } else if (activityParam[INDEX_ISIMMERSE] && Build.VERSION.SDK_INT >= 19) {
-            //透明状态栏
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (isFirst) {
-            isFirst = false;
-            injectRole();
-        }
-    }
-
-    @Override
-    public void setContentView(int layoutResID) {
-        if (activityParam[INDEX_ISSHOWTOOLBAR] && !activityParam[INDEX_ISFULLSCREEN]) {
-            super.setContentView(initToolBar(layoutResID));
-            setSupportActionBar(toolbar);
-
-            if (activityParam[INDEX_ISSHOWRETURN]) {
-                setToolbarLeftBtnText(" ");
-                setToolbarLeftBtnCompoundDrawableLeft(R.drawable.gui_icon_arrow_back);
-            }
-        } else {
-            super.setContentView(layoutResID);
-
-            if (activityParam[INDEX_ISIMMERSE] && activityParam[INDEX_ISIMMERSEPADDINGTOP] && !activityParam[INDEX_ISSHOWTOOLBAR]) {
-                ViewGroup viewGroup = (ViewGroup) ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
-                viewGroup.setPadding(0, ScreenUtil.getStatusBarHeight(this), 0, 0);
-            }
-        }
-
-        injectZClick();
-//        injectRole();
-    }
-
-    @Override
-    public void setContentView(View view) {
-        if (activityParam[INDEX_ISSHOWTOOLBAR] && !activityParam[INDEX_ISFULLSCREEN]) {
-            super.setContentView(initToolBar(view));
-            setSupportActionBar(toolbar);
-
-            if (activityParam[INDEX_ISSHOWRETURN]) {
-                setToolbarLeftBtnText(" ");
-                setToolbarLeftBtnCompoundDrawableLeft(R.drawable.gui_icon_arrow_back);
-            }
-        } else {
-            super.setContentView(view);
-
-            if (activityParam[INDEX_ISIMMERSE] && activityParam[INDEX_ISIMMERSEPADDINGTOP] && !activityParam[INDEX_ISSHOWTOOLBAR]) {
-                ViewGroup viewGroup = (ViewGroup) ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
-                viewGroup.setPadding(0, ScreenUtil.getStatusBarHeight(this), 0, 0);
-            }
-        }
-
-        injectZClick();
-//        injectRole();
-    }
-
-
-    private ViewGroup initToolBar(int layoutResID) {
-        View userView = LayoutInflater.from(this).inflate(layoutResID, null);
-        return initToolBar(userView);
-    }
-
     protected ViewGroup initToolBar(View userView) {
-        /*获取主题中定义的悬浮标志*/
-        TypedArray typedArray = getTheme().obtainStyledAttributes(R.styleable.ToolBarTheme);
-        boolean overly = typedArray.getBoolean(R.styleable.ToolBarTheme_android_windowActionBarOverlay, false);
-        typedArray.recycle();
-
         /*将toolbar引入到父容器中*/
-        View toolbarLay = LayoutInflater.from(this).inflate(R.layout.tsf_view_base_toolbar, null);
-        toolbar = toolbarLay.findViewById(R.id.id_tool_bar);
-        if (activityParam[INDEX_ISIMMERSE]) {
-            int statusBarHeight = ScreenUtil.getStatusBarHeight(this);
+        View toolbarLay = LayoutInflater.from(mActivity).inflate(R.layout.tsf_view_base_toolbar, null);
+        Toolbar toolbar = toolbarLay.findViewById(R.id.id_tool_bar);
+        if (fragmentParam[INDEX_ISIMMERSEPADDINGTOP]) {
+            int statusBarHeight = ScreenUtil.getStatusBarHeight(mActivity);
             toolbar.setPadding(0, statusBarHeight, 0, 0);
             toolbar.getLayoutParams().height += statusBarHeight;
         }
-        toolBarView = getLayoutInflater().inflate(getToolBarLayout() == 0 ? R.layout.tsf_view_base_toolbar_baseview : getToolBarLayout(), toolbar);
+        toolBarView = LayoutInflater.from(mActivity).inflate(getToolBarLayout() == 0 ? R.layout.tsf_view_base_toolbar_baseview : getToolBarLayout(), toolbar);
         toolbarTitleView = toolBarView.findViewById(R.id.toolbar_title);
         toolbarLeftBtn = toolBarView.findViewById(R.id.toolbar_btn_left);
         toolbarRightBtn = toolBarView.findViewById(R.id.toolbar_btn_right);
@@ -266,25 +207,16 @@ public abstract class BaseRoleActivity extends BaseFrameActivity {
 
         /*直接创建一个布局，作为视图容器的父容器*/
         ViewGroup contentView;
-        if (overly) {
-            //不明原因导致布局向右移动了一些，移动回来
-            RelativeLayout.LayoutParams layParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layParam.leftMargin = DisplayUtil.dip2px(mActivity, -10);
-            contentView = new RelativeLayout(this);
-            contentView.addView(userView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            contentView.addView(toolbarLay, layParam);
-        } else {
-            //不明原因导致布局向右移动了一些，移动回来
-            LinearLayout.LayoutParams layParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layParam.leftMargin = DisplayUtil.dip2px(mActivity, -10);
-            contentView = new LinearLayout(this);
-            ((LinearLayout) contentView).setOrientation(LinearLayout.VERTICAL);
-            contentView.addView(toolbarLay, layParam);
-            contentView.addView(userView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        }
-
+        contentView = new LinearLayout(mActivity);
+        ((LinearLayout) contentView).setOrientation(LinearLayout.VERTICAL);
+        //不明原因导致布局向右移动了一些，移动回来
+        LinearLayout.LayoutParams layParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layParam.leftMargin = DisplayUtil.dip2px(mActivity, -10);
+        contentView.addView(toolbarLay, layParam);
+        contentView.addView(userView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         return contentView;
     }
+
 
     /**
      * 可以自己扩展Layout，但是其扩展的Layout里必须包含现在所有的控件Id，也就是可以增加控件不可以移除控件
@@ -294,8 +226,11 @@ public abstract class BaseRoleActivity extends BaseFrameActivity {
         return 0;
     }
 
-    public boolean isImmerse() {
-        return activityParam[INDEX_ISIMMERSE];
+    /**
+     * 获取toobarview的高度
+     */
+    public int getToolbarViewHeight() {
+        return toolBarView.getHeight();
     }
 
     /**
@@ -304,21 +239,6 @@ public abstract class BaseRoleActivity extends BaseFrameActivity {
      * @param title ：ToolBar的标题
      */
     public void setToolbarTitle(String title) {
-        if (StringUtil.isNotEmpty(title)) {
-            toolbarTitleView.setText(title);
-            toolbarTitleView.setVisibility(View.VISIBLE);
-        } else {
-            toolbarTitleView.setText(null);
-            toolbarTitleView.setVisibility(View.GONE);
-        }
-    }
-
-    /**
-     * 设置ToolBar的标题
-     *
-     * @param title ：ToolBar的标题
-     */
-    public void setToolbarTitle(SpannableString title) {
         if (StringUtil.isNotEmpty(title)) {
             toolbarTitleView.setText(title);
             toolbarTitleView.setVisibility(View.VISIBLE);
@@ -482,8 +402,8 @@ public abstract class BaseRoleActivity extends BaseFrameActivity {
      * 左侧按钮点击回调，子类如需要处理点击事件，重写此方法
      */
     protected void onToolBarLeftBtnClick() {
-        if (activityParam[INDEX_ISSHOWRETURN]) {
-            this.finish();
+        if (fragmentParam[INDEX_ISSHOWRETURN]) {
+            mActivity.finish();
         }
     }
 
@@ -503,19 +423,6 @@ public abstract class BaseRoleActivity extends BaseFrameActivity {
      * 右侧按钮长按回调，子类如需要处理点击事件，重写此方法
      */
     protected void onToolBarRightBtnLongClick() {
-    }
-
-    /**
-     *
-     * @return
-     */
-    protected void setHideToolBar() {
-        toolbar.setVisibility(View.GONE);
-    }
-
-    @Override
-    public ProgressDialog getProgressDialog() {
-        return new ZDialogProgress(mActivity);
     }
 
     /**

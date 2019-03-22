@@ -23,6 +23,7 @@ public @interface FragmentParam {
     boolean ISSHOWRETURN_DEF_VALUE        = false;
     boolean ISIMMERSEPADDINGTOP_DEF_VALUE = false;
     boolean ISSKIN_DEF_VALUE              = false;
+    boolean ISROLE_DEF_VALUE              = false;
 
     /**
      * 是否显示toolbar
@@ -43,4 +44,9 @@ public @interface FragmentParam {
      * 是否需要换肤功能
      */
     boolean isSkin() default ISSKIN_DEF_VALUE;
+
+    /**
+     * 是否需要权限控制
+     */
+    boolean isRole() default ISROLE_DEF_VALUE;
 }

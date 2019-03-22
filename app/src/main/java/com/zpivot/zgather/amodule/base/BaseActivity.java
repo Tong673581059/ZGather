@@ -88,7 +88,9 @@ public abstract class BaseActivity extends BaseFrameActivity implements ISkinUpd
     private TextView toolbarLeftBtn;        //最左侧预制按钮，一般防止返回
     private TextView toolbarRightBtn;        //最右侧预制按钮
 
-    protected SkinInflaterFactory mSkinInflaterFactory;
+    private SkinInflaterFactory mSkinInflaterFactory;
+    private boolean isFirst = true;          //是否是第一次启动，用于控制权限管理在第一次onStart的时候执行
+
 
     /**
      * 注解注入值获取
@@ -244,7 +246,10 @@ public abstract class BaseActivity extends BaseFrameActivity implements ISkinUpd
     @Override
     protected void onStart() {
         super.onStart();
-        injectRole();
+        if (isFirst) {
+            isFirst = false;
+            injectRole();
+        }
     }
 
     @Override

@@ -9,6 +9,7 @@
 
 package com.zpivot.zgather.amodule.base;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
@@ -20,13 +21,24 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.telchina.libskin.attr.AttrFactory;
+import com.telchina.libskin.attr.DynamicAttr;
+import com.telchina.libskin.listener.IDynamicNewView;
 import com.zcolin.frame.app.BaseFrameFrag;
 import com.zcolin.frame.util.DisplayUtil;
 import com.zcolin.frame.util.ScreenUtil;
 import com.zcolin.frame.util.StringUtil;
+import com.zcolin.frame.util.ToastUtil;
 import com.zpivot.zgather.R;
+import com.zpivot.zgather.amodule.role.Role;
+import com.zpivot.zgather.amodule.role.RoleControlType;
+import com.zpivot.zgather.amodule.role.RoleMgr;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 客户端Fragment的基类
@@ -36,14 +48,20 @@ import java.lang.reflect.Method;
  * 是否需要ToolBar带返回按钮并且实现了返回的  {@link FragmentParam()} isShowReturn  default true}
  * <p/>
  * 沉浸模式是否需要空出顶部状态栏距离{@link FragmentParam() isImmersePaddingTop default false}
+ * <p/>
+ * 是否需要换肤功能{@link ActivityParam() isSkin default false}
+ * <p/>
+ * 是否需要权限控制{@link ActivityParam() isRole default false}
  */
-public abstract class BaseFragment extends BaseFrameFrag {
+public abstract class BaseFragment extends BaseFrameFrag implements IDynamicNewView {
     private static final int INDEX_ISSHOWTOOLBAR       = 0;
     private static final int INDEX_ISSHOWRETURN        = 1;
     private static final int INDEX_ISIMMERSEPADDINGTOP = 2;
+    private static final int INDEX_ISSKIN              = 3;
+    private static final int INDEX_ISROLE              = 4;
 
     private boolean[] fragmentParam = new boolean[]{FragmentParam.ISSHOWTOOLBAR_DEF_VALUE, FragmentParam.ISSHOWRETURN_DEF_VALUE, FragmentParam
-            .ISIMMERSEPADDINGTOP_DEF_VALUE};
+            .ISIMMERSEPADDINGTOP_DEF_VALUE, ActivityParam.ISSKIN_DEF_VALUE, ActivityParam.ISROLE_DEF_VALUE};
 
     private View     toolBarView;           //自定义的toolBar的布局
     private TextView toolbarTitleView;       //标题 居中
@@ -52,6 +70,41 @@ public abstract class BaseFragment extends BaseFrameFrag {
 
     private View containView = null; //添加toolbar之后的最终view容器
 
+    private IDynamicNewView mIDynamicNewView;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        injectFragmentParam();
+        if (fragmentParam[INDEX_ISSKIN]) {
+            try {
+                mIDynamicNewView = (IDynamicNewView) context;
+            } catch (ClassCastException e) {
+                mIDynamicNewView = null;
+            }
+        }
+    }
+
+    @Override
+    public void dynamicAddView(View view, List<DynamicAttr> pDAttrs) {
+        if (mIDynamicNewView == null) {
+            throw new RuntimeException("IDynamicNewView should be implements !");
+        } else {
+            mIDynamicNewView.dynamicAddView(view, pDAttrs);
+        }
+    }
+
+    public void dynamicAddSkinView(View view, String attrName, int attrValueResId) {
+        List<DynamicAttr> pDAttrs = new ArrayList<>();
+        pDAttrs.add(new DynamicAttr(attrName, attrValueResId));
+        dynamicAddView(view, pDAttrs);
+    }
+
+    @Override
+    public LayoutInflater getLayoutInflater(Bundle savedInstanceState) {
+        LayoutInflater result = getActivity().getLayoutInflater();
+        return result;
+    }
 
     @Nullable
     @Override
@@ -59,7 +112,7 @@ public abstract class BaseFragment extends BaseFrameFrag {
         /*在ViewPager切换过程中会重新调用onCreateView，此时如果实例化过，需要移除，会自动再次添加*/
         if (containView == null) {
             rootView = inflater.inflate(getRootViewLayId(), null);
-            injectFragmentParam();//注入
+            //            injectFragmentParam();//注入
             injectZClick();
 
             //添加toolbar
@@ -82,6 +135,7 @@ public abstract class BaseFragment extends BaseFrameFrag {
             }
         }
 
+        injectRole();
         return containView;
     }
 
@@ -100,6 +154,8 @@ public abstract class BaseFragment extends BaseFrameFrag {
             fragmentParam[INDEX_ISSHOWTOOLBAR] = requestParamsUrl.isShowToolBar();
             fragmentParam[INDEX_ISSHOWRETURN] = requestParamsUrl.isShowReturn();
             fragmentParam[INDEX_ISIMMERSEPADDINGTOP] = requestParamsUrl.isImmersePaddingTop();
+            fragmentParam[INDEX_ISSKIN] = requestParamsUrl.isSkin();
+            fragmentParam[INDEX_ISROLE] = requestParamsUrl.isRole();
         }
     }
 
@@ -131,6 +187,49 @@ public abstract class BaseFragment extends BaseFrameFrag {
         }
     }
 
+    private void injectRole() {
+        if (fragmentParam[INDEX_ISROLE]) {
+            Field[] fields = getClass().getDeclaredFields();
+            if (fields != null && fields.length > 0) {
+                Class<?> acceptableType = View.class;
+                for (Field field : fields) {
+                    if (field == null) {
+                        continue;
+                    }
+                    // 这个变量是个可以接收的类型(android.view.View) 并且不是static字段和final字段
+                    if (acceptableType.isAssignableFrom(field.getType()) && field.getModifiers() != Modifier.FINAL && field.getModifiers() != Modifier.STATIC) {
+                        Role annotation = field.getAnnotation(Role.class);
+
+                        if (annotation != null) {
+                            String[] roles = annotation.roles();
+                            RoleControlType rolePerm = RoleMgr.hasRoles(roles);
+                            try {
+                                Method method = field.getType().getMethod("setVisibility", int.class);
+                                Method methodClick = field.getType().getMethod("setOnClickListener", View.OnClickListener.class);
+                                switch (rolePerm) {
+                                    case ROLE_GONE:
+                                        method.invoke(field.get(this), View.GONE);
+                                        break;
+                                    case ROLE_NO_CLICK:
+                                        method.invoke(field.get(this), View.VISIBLE);
+                                        methodClick.invoke(field.get(this), (View.OnClickListener) v -> {
+                                            ToastUtil.toastShort(RoleMgr.ROLE_TOAST);
+                                        });
+                                        break;
+                                    default:
+                                        method.invoke(field.get(this), View.VISIBLE);
+                                        break;
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     protected ViewGroup initToolBar(View userView) {
         /*将toolbar引入到父容器中*/
         View toolbarLay = LayoutInflater.from(mActivity).inflate(R.layout.tsf_view_base_toolbar, null);
@@ -150,6 +249,20 @@ public abstract class BaseFragment extends BaseFrameFrag {
         BaseClickListener clickListener = new BaseClickListener();
         toolbarLeftBtn.setOnClickListener(clickListener);
         toolbarRightBtn.setOnClickListener(clickListener);
+
+        if (fragmentParam[INDEX_ISSKIN]) {
+            dynamicAddSkinView(toolbar, AttrFactory.BACKGROUND, R.color.colorPrimary);
+            //            dynamicAddSkinView(toolbarTitleView, AttrFactory.STYLE, R.style.TextStyle_TCPrimary_Big);
+            dynamicAddSkinView(toolbarTitleView, AttrFactory.TEXT_COLOR, R.color.toolbarTitleTextColor);
+            dynamicAddSkinView(toolbarLeftBtn, AttrFactory.BACKGROUND, R.color.toolbarLeftBackground);
+            //            dynamicAddSkinView(toolbarLeftBtn, AttrFactory.STYLE, R.style.TextStyle_TCPrimary_Small);
+            dynamicAddSkinView(toolbarLeftBtn, AttrFactory.TEXT_COLOR, R.color.toolbarLeftTextColor);
+            dynamicAddSkinView(toolbarLeftBtn, AttrFactory.DRAWABLE_LEFT, 0);
+            dynamicAddSkinView(toolbarRightBtn, AttrFactory.BACKGROUND, R.color.toolbarRightBackground);
+            //           dynamicAddSkinView(toolbarRightBtn, AttrFactory.STYLE, R.style.TextStyle_TCSubPrimary_Small);
+            dynamicAddSkinView(toolbarRightBtn, AttrFactory.TEXT_COLOR, R.color.toolbarRightTextColor);
+            dynamicAddSkinView(toolbarRightBtn, AttrFactory.DRAWABLE_LEFT, 0);
+        }
 
         /*直接创建一个布局，作为视图容器的父容器*/
         ViewGroup contentView;
