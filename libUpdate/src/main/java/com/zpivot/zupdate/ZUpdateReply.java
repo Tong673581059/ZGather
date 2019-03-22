@@ -1,4 +1,4 @@
-package com.zcolin.zupdate;
+package com.zpivot.zupdate;
 
 import com.zcolin.frame.http.ZReply;
 

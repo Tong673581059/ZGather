@@ -1,4 +1,4 @@
-package com.zcolin.zupdate;
+package com.zpivot.zupdate;
 
 import android.app.Activity;
 import android.app.DownloadManager;
@@ -20,6 +20,7 @@ import com.zcolin.frame.util.NetworkUtil;
 import com.zcolin.frame.util.SystemDownloadApkUtil;
 import com.zcolin.frame.util.ToastUtil;
 import com.zcolin.gui.ZConfirm;
+import com.zcolin.zupdate.ZUpdateReply;
 
 import java.io.File;
 import java.net.SocketTimeoutException;

@@ -1,4 +1,6 @@
-package com.zcolin.zupdate;
+package com.zpivot.zupdate;
+
+import com.zcolin.zupdate.ZUpdateReply;
 
 /**
  * 默认检查更新返回报文
