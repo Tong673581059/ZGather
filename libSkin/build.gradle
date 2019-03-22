@@ -1,7 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
 
-group='com.github.Tong673581059'
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -33,3 +31,5 @@ dependencies {
     compileOnly "com.android.support:design:$supprotVersion"
     compileOnly 'com.github.z-pivot:ZFrame:2.1.1'//程序框架
 }
+
+apply from: './javadoc.gradle'
