@@ -12,8 +12,8 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:$supprotVersion"
     implementation "com.github.z-pivot:ZFrame:version"//程序框架
     implementation "com.github.zcolin:ZUILib:version"//UI库
-    implementation 'com.github.z-pivot.ZGather:libUpdate:latest.release'
-    implementation 'com.github.z-pivot.ZGather:libSkin:latest.release'
+    implementation 'com.github.Tong673581059.ZGather:libUpdate:latest.release'
+    implementation 'com.github.Tong673581059.ZGather:libSkin:latest.release'
 }
 ```
 ##### 使用方法及特别注意
@@ -28,7 +28,7 @@ ZUpdate.instance()
 ```
 二、换肤管理libSkin
 ```
-(1) 在build.gradle中添加libSkin的依赖 implementation 'com.github.z-pivot.ZGather:libSkin:latest.release'
+(1) 在build.gradle中添加libSkin的依赖 implementation 'com.github.Tong673581059.ZGather:libSkin:latest.release'
 (2) 主题皮肤的res资源文件。默认主题皮肤用默认的res资源文件；一套自定义主题皮肤对应资源文件命名统一以'_skinName'结尾
     例如：默认字体颜色textColor，自定义皮肤的对应命名就是textColor_skinName(skinName是你的自定义主题皮肤名称)
     其他，图片，drawable、style都是如此
