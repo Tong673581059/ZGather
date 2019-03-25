@@ -35,4 +35,5 @@ dependencies {
     compileOnly "com.github.zcolin:ZUILib:2.0.0"//UI库
 }
 
-apply from: './javadoc.gradle'
+//apply from: './javadoc.gradle'
+apply from: './maven-push.gradle'
