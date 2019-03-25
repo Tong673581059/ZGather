@@ -34,5 +34,4 @@ dependencies {
     compileOnly 'com.github.z-pivot:ZFrame:2.1.1'//程序框架
 }
 
-//apply from: './javadoc.gradle'
-apply from: './maven-push.gradle'
+apply from: './javadoc.gradle'
