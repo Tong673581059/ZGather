@@ -6,9 +6,7 @@
  * 2 在跟目录的build.gradle中buildscript->dependencies-> 配置  
  * classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
  */
-apply plugin: 'com.github.dcendents.android-maven'
-
-group = 'com.github.Tong673581059'
+apply plugin: 'maven'
 
 task androidJavadocs(type: Javadoc) {
     options.encoding = "UTF-8"
