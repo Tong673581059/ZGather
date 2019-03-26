@@ -28,7 +28,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api fileTree(dir: 'libs', include: ['*.jar'])
     compileOnly "com.android.support:appcompat-v7:$supprotVersion"
     compileOnly "com.android.support:design:$supprotVersion"
     compileOnly 'com.github.z-pivot:ZFrame:2.1.1'//程序框架
