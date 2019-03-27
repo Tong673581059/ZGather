@@ -10,6 +10,7 @@ import com.telchina.libskin.config.SkinConfig;
 import com.telchina.libskin.listener.ISkinLoader;
 import com.telchina.libskin.listener.ISkinUpdate;
 import com.telchina.libskin.util.L;
+import com.zcolin.frame.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ public class SkinManager implements ISkinLoader {
     private                 Resources         mResources;
     private boolean isDefaultSkin = false;//当前的皮肤是否是默认的
     private String skinPackageName;//皮肤的包名
-    private String skinPath;//皮肤路径
+    private String skin;//皮肤路径
 
     private SkinManager() {
     }
@@ -63,8 +64,8 @@ public class SkinManager implements ISkinLoader {
     /**
      * 得到当前的皮肤路径
      */
-    public String getSkinPath() {
-        return skinPath;
+    public String getSkin() {
+        return StringUtil.isEmpty(skin) ? SkinConfig.getCustomSkinPath(context) : skin;
     }
 
     /**
@@ -130,20 +131,30 @@ public class SkinManager implements ISkinLoader {
         }
     }
 
+    /**
+     * 加载当前保存的主题皮肤
+     */
     public void load() {
         String skin = SkinConfig.getCustomSkinPath(context);
         load(skin);
     }
 
-
+    /**
+     * 按传值切换主题皮肤
+     * @param skinPackagePath 如果是主题包是另外打包的，就代表是主题包的路径；本包的就是主题皮肤名
+     */
     public void load(String skinPackagePath) {
         mResources = context.getResources();
         SkinConfig.saveSkinPath(context, skinPackagePath);
-        skinPath = skinPackagePath;
+        skin = skinPackagePath;
         isDefaultSkin = false;
         notifySkinUpdate();
     }
 
+    /**
+     * 按颜色资源id，获取当前主题对应的颜色id
+     * @param resId 颜色资源id
+     */
     public int getColor(int resId) {
         int originColor = context.getResources().getColor(resId);
         if (mResources == null || isDefaultSkin) {
@@ -166,6 +177,10 @@ public class SkinManager implements ISkinLoader {
         return trueColor;
     }
 
+    /**
+     * 按Drawable资源id，获取当前主题对应的Drawable id
+     * @param resId Drawable资源id
+     */
     public Drawable getDrawable(int resId) {
         Drawable originDrawable = context.getResources().getDrawable(resId);
         if (mResources == null || isDefaultSkin) {
@@ -191,6 +206,10 @@ public class SkinManager implements ISkinLoader {
         return trueDrawable;
     }
 
+    /**
+     * 按style资源id，获取当前主题对应的style id
+     * @param resName style资源id
+     */
     public int getStyle(String resName) {
         int orignStyle = mResources.getIdentifier(resName, "style", context.getPackageName());
         if (mResources == null || isDefaultSkin) {
@@ -220,7 +239,7 @@ public class SkinManager implements ISkinLoader {
 
         String resName = context.getResources().getResourceEntryName(resId);
         if (isExtendSkin) {
-            int trueResId = mResources.getIdentifier(resName + "_" + skinPath, "color", context.getPackageName());
+            int trueResId = mResources.getIdentifier(resName + "_" + skin, "color", context.getPackageName());
             ColorStateList trueColorList = null;
             if (trueResId == 0) { // 如果皮肤包没有复写该资源，但是需要判断是否是ColorStateList
                 try {
