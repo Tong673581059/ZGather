@@ -1,9 +1,9 @@
 package com.telchina.libskin.attr;
 
 import android.graphics.drawable.Drawable;
-import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.telchina.libskin.load.SkinManager;
 import com.telchina.libskin.util.L;
@@ -31,8 +31,18 @@ public class DrawableAttr extends SkinAttr {
                 } else if (AttrFactory.DRAWABLE_BOTTOM.equals(attrName)) {
                     ((Button) view).setCompoundDrawablesWithIntrinsicBounds(null, null, null, bg);
                 }
+            } else if (view instanceof TextView) {
+                if (AttrFactory.DRAWABLE_LEFT.equals(attrName)) {
+                    ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(bg, null, null, null);
+                } else if (AttrFactory.DRAWABLE_RIGHT.equals(attrName)) {
+                    ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(null, null, bg, null);
+                } else if (AttrFactory.DRAWABLE_TOP.equals(attrName)) {
+                    ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(null, bg, null, null);
+                } else if (AttrFactory.DRAWABLE_BOTTOM.equals(attrName)) {
+                    ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(null, null, null, bg);
+                }
             }
-            L.i("applyAttr", "apply as drawable");
+           L.i("applyAttr", "apply as drawable");
         }
     }
 }

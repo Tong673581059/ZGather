@@ -47,7 +47,8 @@ public class AttrFactory {
         } else if (NAVIGATION_VIEW_MENU.equals(attrName)) {
             mSkinAttr = new NavigationViewAttr();
             Log.i(TAG, "create:FabButtonAttr");
-        } else if (DRAWABLE_LEFT.equals(attrName)) {
+        } else if (DRAWABLE_LEFT.equals(attrName) || DRAWABLE_BOTTOM.equals(attrName)
+                || DRAWABLE_LEFT.equals(attrName) || DRAWABLE_RIGHT.equals(attrName)) {
             mSkinAttr = new DrawableAttr();
         } else if (STYLE.equals(attrName)) {
             mSkinAttr=new StyleAttr();
@@ -82,6 +83,10 @@ public class AttrFactory {
             return true;
         }
         if (BACKGROUND_TINTLIST.equals(attrName)) {
+            return true;
+        }
+        if (DRAWABLE_TOP.equals(attrName) || DRAWABLE_BOTTOM.equals(attrName)
+                || DRAWABLE_LEFT.equals(attrName) || DRAWABLE_RIGHT.equals(attrName)){
             return true;
         }
         if (STYLE.equals(attrName)){
