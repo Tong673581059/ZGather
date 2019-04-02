@@ -10,7 +10,8 @@ import android.view.View;
 public abstract class SkinAttr {
     protected static final String RES_TYPE_NAME_COLOR    = "color";
     protected static final String RES_TYPE_NAME_DRAWABLE = "drawable";
-    protected static final String RES_TYPE_NAME_STYLE="style";
+    protected static final String RES_TYPE_NAME_STYLE    = "style";
+    protected static final String RES_TYPE_NAME_SRC      = "src";
     /**
      * 属性名, 例如: background、textSize、textColor
      */
@@ -33,8 +34,6 @@ public abstract class SkinAttr {
 
     /**
      * Use to apply view with new TypedValue
-     *
-     * @param view
      */
     public abstract void apply(View view);
 

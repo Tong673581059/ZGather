@@ -35,11 +35,12 @@ public class SkinInflaterFactory implements LayoutInflaterFactory {
      * 存储那些有皮肤更改需求的View及其对应的属性的集合
      */
     private List<SkinItem> mSkinItems = new ArrayList<SkinItem>();
+    private Context context;
 
 
     @Override
     public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
-
+        this.context = context;
         // 检测当前View是否有更换皮肤的需求
         boolean isSkinEnable = attrs.getAttributeBooleanValue(SkinConfig.NAMESPACE, SkinConfig.ATTR_SKIN_ENABLE, false);
         if (!isSkinEnable) {
@@ -128,6 +129,10 @@ public class SkinInflaterFactory implements LayoutInflaterFactory {
                 skinItem.apply();
             }
         }
+    }
+
+    public Context getContext() {
+        return context;
     }
 
     /**

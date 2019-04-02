@@ -18,6 +18,7 @@ public class AttrFactory {
     public static final String BACKGROUND_TINTLIST  = "backgroundTint";
     public static final String NAVIGATION_VIEW_MENU = "navigationViewMenu";
     public static final String STYLE                = "style";
+    public static final String SRC                  = "src";
 
     public static final String DRAWABLE_LEFT   = "drawableLeft";
     public static final String DRAWABLE_RIGHT  = "drawableRight";
@@ -51,7 +52,9 @@ public class AttrFactory {
                 || DRAWABLE_LEFT.equals(attrName) || DRAWABLE_RIGHT.equals(attrName)) {
             mSkinAttr = new DrawableAttr();
         } else if (STYLE.equals(attrName)) {
-            mSkinAttr=new StyleAttr();
+            mSkinAttr = new StyleAttr();
+        } else if (SRC.equals(attrName)) {
+            mSkinAttr = new SrcAttr();
         } else {
             return null;
         }
@@ -86,10 +89,10 @@ public class AttrFactory {
             return true;
         }
         if (DRAWABLE_TOP.equals(attrName) || DRAWABLE_BOTTOM.equals(attrName)
-                || DRAWABLE_LEFT.equals(attrName) || DRAWABLE_RIGHT.equals(attrName)){
+                || DRAWABLE_LEFT.equals(attrName) || DRAWABLE_RIGHT.equals(attrName)) {
             return true;
         }
-        if (STYLE.equals(attrName)){
+        if (STYLE.equals(attrName)) {
             return true;
         }
         return NAVIGATION_VIEW_MENU.equals(attrName);
