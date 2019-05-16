@@ -12,6 +12,7 @@ public abstract class SkinAttr {
     protected static final String RES_TYPE_NAME_DRAWABLE = "drawable";
     protected static final String RES_TYPE_NAME_STYLE    = "style";
     protected static final String RES_TYPE_NAME_SRC      = "src";
+
     /**
      * 属性名, 例如: background、textSize、textColor
      */

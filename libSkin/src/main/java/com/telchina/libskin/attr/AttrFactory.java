@@ -24,7 +24,7 @@ public class AttrFactory {
     public static final String DRAWABLE_RIGHT  = "drawableRight";
     public static final String DRAWABLE_TOP    = "drawableTop";
     public static final String DRAWABLE_BOTTOM = "drawableBottom";
-
+    public static final String DPOPUP_BACKROUND= "popupBackground";
 
     public static SkinAttr get(String attrName, int attrValueRefId, String attrValueRefName, String typeName) {
         Log.i(TAG, "attrName:" + attrName);
@@ -55,6 +55,8 @@ public class AttrFactory {
             mSkinAttr = new StyleAttr();
         } else if (SRC.equals(attrName)) {
             mSkinAttr = new SrcAttr();
+        } else if (DPOPUP_BACKROUND.equals(attrName)) {
+            mSkinAttr = new PopupBackgroundAttr();
         } else {
             return null;
         }
@@ -93,6 +95,12 @@ public class AttrFactory {
             return true;
         }
         if (STYLE.equals(attrName)) {
+            return true;
+        }
+        if (SRC.equals(attrName)) {
+            return true;
+        }
+        if (DPOPUP_BACKROUND.equals(attrName)) {
             return true;
         }
         return NAVIGATION_VIEW_MENU.equals(attrName);
