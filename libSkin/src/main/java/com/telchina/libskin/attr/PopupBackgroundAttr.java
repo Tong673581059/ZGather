@@ -19,11 +19,10 @@ public class PopupBackgroundAttr extends SkinAttr {
     @Override
     public void apply(View view) {
         if (RES_TYPE_NAME_COLOR.equals(attrValueTypeName)) {
-
             int color = SkinManager.getInstance().getColor(attrValueRefId);
             if (view instanceof Spinner) {
                 Spinner spinner = (Spinner) view;
-                spinner.setPopupBackgroundResource(SkinManager.getInstance().getColor(attrValueRefId));
+                spinner.setPopupBackgroundResource(color);
             }
         } else if (RES_TYPE_NAME_DRAWABLE.equals(attrValueTypeName)) {
             Drawable bg = SkinManager.getInstance().getDrawable(attrValueRefId);
