@@ -26,8 +26,11 @@ public class PopupBackgroundAttr extends SkinAttr {
             }
         } else if (RES_TYPE_NAME_DRAWABLE.equals(attrValueTypeName)) {
             Drawable bg = SkinManager.getInstance().getDrawable(attrValueRefId);
-            Spinner spinner = (Spinner) view;
-            spinner.setPopupBackgroundDrawable(bg);
+            if (view instanceof Spinner) {
+                Spinner spinner = (Spinner) view;
+                spinner.setPopupBackgroundDrawable(bg);
+            }
+
         }
 
     }
